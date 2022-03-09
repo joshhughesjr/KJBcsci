@@ -5,7 +5,7 @@ import {Text} from 'react-native';
 import { PlaidLink, LinkSuccess, LinkExit } from 'react-native-plaid-link-sdk';
 
 // https://birdboombox.com/
-const urlBase = "http://192.168.1.217:8000/";
+const urlBase = "https://birdboombox.com/";
 
 // This component handles the PlaidLink component from react-native-plaid-link-sdk
 // The PlaidLink Component requires a link token in order to work properly
@@ -21,13 +21,22 @@ export default class PlaidLinkHandler extends React.Component {
     
     async componentDidMount() {
         // Get Link Token asynchronously when this component is displayed
-        const response = await fetch(urlBase + "api/create_link_token", {
-            method: 'POST'
-        });
+        try {
+            const response = await fetch(urlBase + "api/create_link_token", {
+                method: 'GET'
+            });
+            
+            // When the link token is retrieved, then save that into the component state
+            const data = await response.json();
+            this.setState({linkToken: data.link_token});
+            
+
+        } catch (error) {
+            console.error(error);
+        }
         
-        // When the link token is retrieved, then save that into the component state
-        const data = await response.json();
-        this.setState({linkToken: data.link_token})
+        
+        
     }
 
     render() {

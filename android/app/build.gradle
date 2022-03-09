@@ -194,6 +194,7 @@ dependencies {
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
     def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
 
+    
     // If your app supports Android versions before Ice Cream Sandwich (API level 14)
     // All fresco packages should use the same version
     if (isGifEnabled || isWebpEnabled) {
@@ -215,6 +216,7 @@ dependencies {
         }
     }
     
+    
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'
@@ -223,9 +225,17 @@ dependencies {
         exclude group:'com.facebook.flipper'
         exclude group:'com.squareup.okhttp3', module:'okhttp'
     }
+    
     debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.flipper'
     }
+
+    configurations.all {
+    resolutionStrategy.force 'com.squareup.okhttp3:okhttp:4.9.1'
+    resolutionStrategy.force 'com.squareup.okhttp3:okhttp-urlconnection:4.9.1'
+    resolutionStrategy.force 'com.squareup.okio:okio:2.7.0'
+    }
+    
 
     if (enableHermes) {
         debugImplementation files(new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim(), "../android/hermes-debug.aar"))
