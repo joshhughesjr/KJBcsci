@@ -39,6 +39,24 @@ export default class PlaidLinkHandler extends React.Component {
         
     }
 
+    async getAccessToken(public_token) {
+        console.log("Public token: " + public_token);
+        console.log("fetching access token");
+        
+        const response = await fetch("https://birdboombox.com/api/exchange_public_token", {
+            method: "POST",
+            body: JSON.stringify({ public_token: public_token }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        const data = await response.json();
+        const token = data.access_token;
+
+        return token;
+    }
+
     render() {
         if (this.state.linkToken == '') {
             // No link token yet, display loading screen
@@ -51,10 +69,19 @@ export default class PlaidLinkHandler extends React.Component {
                         token: this.state.linkToken,
                     }}
                     onSuccess={(success) => {
-                    console.log(success);
+                    // The link_token has been exchanged for a public_token
+                    // Exchange the public_token for an access_token
+                    const publicToken = success.publicToken;
+                    
+                    (async () => {
+                        // Get the access token
+                        const accessToken = await this.getAccessToken(publicToken);
+                        console.log(accessToken);
+                    })();
+
                     }}
                     onExit={(exit) => {
-                    console.log(exit);
+                        console.log(exit);
                     }}
                 >
                 
