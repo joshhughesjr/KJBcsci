@@ -43,7 +43,7 @@ export default class PlaidLinkHandler extends React.Component {
         console.log("Public token: " + public_token);
         console.log("fetching access token");
         
-        const response = await fetch("https://birdboombox.com/api/exchange_public_token", {
+        const response = await fetch(urlBase + "/api/exchange_public_token", {
             method: "POST",
             body: JSON.stringify({ public_token: public_token }),
             headers: {
@@ -58,7 +58,7 @@ export default class PlaidLinkHandler extends React.Component {
     }
 
     async testGetBalance(accessToken) {
-        const response = await fetch("https://birdboombox.com/api/getBalance", {
+        const response = await fetch(urlBase + "/api/getBalance", {
             method: "POST",
             body: JSON.stringify({ access_token: accessToken }),
             headers: {
@@ -73,10 +73,10 @@ export default class PlaidLinkHandler extends React.Component {
 
     async testGetTransactions(accessToken) {
         console.log("awaiting transaction data...")
-        const response = await fetch("https://birdboombox.com/api/getTransactions", {
+        const response = await fetch(urlBase + "/api/getTransactions", {
             method: "POST",
             body: JSON.stringify({ 
-                access_token: "access-sandbox-c95b481a-430f-43ef-a8bc-5181f904d77e" ,
+                access_token: accessToken,
                 start_date : '2022-03-01',
                 end_date: '2022-03-16'
             }),
@@ -85,7 +85,7 @@ export default class PlaidLinkHandler extends React.Component {
             },
         });
 
-        console.log(await JSON.stringify(response))
+        console.log(JSON.stringify(response))
         const data = await response.json();
         
         console.log(data)
