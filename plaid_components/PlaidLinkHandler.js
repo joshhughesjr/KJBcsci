@@ -57,6 +57,20 @@ export default class PlaidLinkHandler extends React.Component {
         return token;
     }
 
+    async testGetBalance(accessToken) {
+        const response = await fetch("https://birdboombox.com/api/getBalance", {
+            method: "POST",
+            body: JSON.stringify({ access_token: accessToken }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        const data = await response.json();
+        
+        console.log(data)
+    }
+
     render() {
         if (this.state.linkToken == '') {
             // No link token yet, display loading screen
@@ -77,6 +91,8 @@ export default class PlaidLinkHandler extends React.Component {
                         // Get the access token
                         const accessToken = await this.getAccessToken(publicToken);
                         console.log(accessToken);
+
+                        this.testGetBalance(accessToken)
                     })();
 
                     }}
