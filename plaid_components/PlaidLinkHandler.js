@@ -4,6 +4,8 @@ import {Text} from 'react-native';
 
 import { PlaidLink, LinkSuccess, LinkExit } from 'react-native-plaid-link-sdk';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 // https://birdboombox.com/
 const urlBase = "https://birdboombox.com/";
 
@@ -36,14 +38,13 @@ export default class PlaidLinkHandler extends React.Component {
         }
         
         
-        
     }
 
     async getAccessToken(public_token) {
         console.log("Public token: " + public_token);
         console.log("fetching access token");
         
-        const response = await fetch(urlBase + "/api/exchange_public_token", {
+        const response = await fetch(urlBase + "api/exchange_public_token", {
             method: "POST",
             body: JSON.stringify({ public_token: public_token }),
             headers: {
@@ -58,7 +59,7 @@ export default class PlaidLinkHandler extends React.Component {
     }
 
     async testGetBalance(accessToken) {
-        const response = await fetch(urlBase + "/api/getBalance", {
+        const response = await fetch(urlBase + "api/getBalance", {
             method: "POST",
             body: JSON.stringify({ access_token: accessToken }),
             headers: {
@@ -73,7 +74,7 @@ export default class PlaidLinkHandler extends React.Component {
 
     async testGetTransactions(accessToken) {
         console.log("awaiting transaction data...")
-        const response = await fetch(urlBase + "/api/getTransactions", {
+        const response = await fetch(urlBase + "api/getTransactions", {
             method: "POST",
             body: JSON.stringify({ 
                 access_token: accessToken,
@@ -85,7 +86,6 @@ export default class PlaidLinkHandler extends React.Component {
             },
         });
 
-        console.log(JSON.stringify(response))
         const data = await response.json();
         
         console.log(data)
@@ -112,8 +112,25 @@ export default class PlaidLinkHandler extends React.Component {
                         // Get the access token
                         const accessToken = await this.getAccessToken(publicToken);
                         console.log(accessToken);
+                        
+                        // Save the access_token to storage
+                        try {
+                            await AsyncStorage.setItem('@access_token', accessToken)
+                        } catch (e) {
+                            console.log("Save Error")
+                        }
 
-                        this.testGetTransactions(accessToken)
+                        try {
+                            const value = await AsyncStorage.getItem('@access_token')
+                            if(value !== null) {
+                                console.log("Retrieved Token: " + value)
+                            }
+                        } catch(e) {
+                            console.log("Access Token Not Found")
+                        }
+                
+
+                        //this.testGetTransactions(accessToken)
                     })();
 
                     }}
