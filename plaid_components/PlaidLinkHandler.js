@@ -119,7 +119,8 @@ export default class PlaidLinkHandler extends React.Component {
                         } catch (e) {
                             console.log("Save Error")
                         }
-
+                        
+                        // Test Retrieving Token
                         try {
                             const value = await AsyncStorage.getItem('@access_token')
                             if(value !== null) {
@@ -129,8 +130,6 @@ export default class PlaidLinkHandler extends React.Component {
                             console.log("Access Token Not Found")
                         }
                 
-
-                        //this.testGetTransactions(accessToken)
                     })();
 
                     }}

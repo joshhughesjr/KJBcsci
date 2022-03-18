@@ -6,7 +6,7 @@ import PlaidLinkHandler from '../plaid_components/PlaidLinkHandler.js';
 const AddAccountScreen = () => {
   return (
     <View style={styles.center}>
-      <Text>This is the Add Accountsss screen</Text>
+      <Text>This is the Add Accounts screen</Text>
       <PlaidLinkHandler/>
     </View>
   );
