@@ -1,8 +1,21 @@
 import React from 'react';
 
-import {Text} from 'react-native';
+import {Text, StyleSheet} from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { FlatList } from 'react-native-gesture-handler';
+
+const styles = StyleSheet.create({
+    container: {
+     flex: 1,
+     paddingTop: 22
+    },
+    item: {
+      padding: 10,
+      fontSize: 18,
+      height: 44,
+    },
+  });
 
 export default class BalanceDisplay extends React.Component {
 
@@ -70,9 +83,16 @@ export default class BalanceDisplay extends React.Component {
             return <Text>No Bank Login Found</Text>;
 
         } else if (this.state.balanceData != "") {
+            var data = JSON.parse(this.state.balanceData)
+
+            if (data.length == 0) {
+                return <Text>No Data Found</Text>
+            }
 
             // Displaying Data State
-            return <Text>{this.state.balanceData}</Text>
+            return (
+                <FlatList data={data} renderItem={({item}) => <Text style={styles.item}>{item.name + ": " + item.balance}</Text>} keyExtractor={(item, index) => index.toString()}/>
+            )
 
         } else {
             
