@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Text, StyleSheet} from 'react-native';
+import {Text, View, StyleSheet, ActivityIndicator} from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlatList } from 'react-native-gesture-handler';
@@ -76,7 +76,6 @@ export default class BalanceDisplay extends React.Component {
 
     render() {
 
-        // Three main states
         if(this.state.accessToken == ""){
             // No access token state
 
@@ -97,7 +96,7 @@ export default class BalanceDisplay extends React.Component {
         } else {
             
             // Loading State
-            return <Text>Loading...</Text>
+            return (<ActivityIndicator size="large" color="#6ebf4a"/>)
 
         }
     }
