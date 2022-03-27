@@ -69,7 +69,7 @@ export default class BalanceDisplay extends React.Component {
         });
 
         const data = await response.json();
-        
+        console.log(data)
         return data;
     }
 
@@ -83,7 +83,6 @@ export default class BalanceDisplay extends React.Component {
 
         } else if (this.state.balanceData != "") {
             var data = JSON.parse(this.state.balanceData)
-
             if (data.length == 0) {
                 return <Text>No Data Found</Text>
             }

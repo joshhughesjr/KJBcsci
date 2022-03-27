@@ -2,11 +2,12 @@ import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 
 import BalanceDisplay from "../plaid_components/BalanceDisplay";
+import TransactionDisplay from "../plaid_components/TransactionDisplay";
 
 const DetailsScreen = () => {
   return (
     <View style={styles.center}>
-      <BalanceDisplay/>
+      <TransactionDisplay/>
     </View>
   );
 };

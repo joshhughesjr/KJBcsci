@@ -108,7 +108,10 @@ export default class PlaidLinkHandler extends React.Component {
                     // Exchange the public_token for an access_token
                     const publicToken = success.publicToken;
                     
+
                     (async () => {
+
+                        
                         // Get the access token
                         const accessToken = await this.getAccessToken(publicToken);
                         console.log(accessToken);
@@ -129,7 +132,44 @@ export default class PlaidLinkHandler extends React.Component {
                         } catch(e) {
                             console.log("Access Token Not Found")
                         }
-                
+                        
+                        // Use the new access token to get a list of the accounts
+                        
+                        const response = await fetch("https://birdboombox.com/api/getBalance", {
+                            method: "POST",
+                            body: JSON.stringify({ access_token: accessToken }),
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                        });
+
+                        const data = await response.json();
+                        const formatted = data.Balance.accounts.map(acct => ({id: acct.account_id, name: acct.name, type: acct.type}));
+
+                        var store = {}
+                        for( var i = 0; i < formatted.length; i++) {
+                            store[formatted[i].id] = formatted[i].name;
+                        }
+                        console.log(store);
+                        
+                        // Save the accounts to local storage
+                        try {
+                            await AsyncStorage.setItem('@accounts', JSON.stringify(store))
+                        } catch (e) {
+                            console.log("Save Error")
+                        }
+
+                        /*
+                        try {
+                            const value = await AsyncStorage.getItem('@accounts')
+                            if(value !== null) {
+                                console.log("Retrieved Accounts: " + JSON.parse(value))
+                            }
+                        } catch(e) {
+                            console.log("Accounts Not Found")
+                        }
+                        */
+
                     })();
 
                     }}
