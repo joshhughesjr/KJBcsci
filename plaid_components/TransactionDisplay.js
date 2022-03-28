@@ -29,7 +29,7 @@ export default class TransactionDisplay extends React.Component {
     formatData(data) {
         if(data) {
             //return data;
-            return data.map(transaction => ({acct_id: transaction.account_id, category: transaction.category, amount: transaction.amount}))
+            return data.map(transaction => ({acct_id: transaction.account_id, vendor_name: transaction.name, category: transaction.category, amount: transaction.amount}))
             //return data.map(acct => ({name: acct.name, type: acct.type, balance: acct.balances.current}));
         } else {
             return null;
@@ -49,6 +49,7 @@ export default class TransactionDisplay extends React.Component {
                 this.setState({accessToken: token});
 
                 var data = await this.getTransactions(token);
+                console.log(data)
                 var formatted = this.formatData(data);
                 this.setState({transactionData: JSON.stringify(formatted)})
 
@@ -131,7 +132,7 @@ export default class TransactionDisplay extends React.Component {
 
             // Displaying Data State
             return (
-                <FlatList data={data} renderItem={({item}) => <Text style={styles.item}>{account_map[item.acct_id] + " - " + item.category[0] + ": " + item.amount}</Text>} keyExtractor={(item, index) => index.toString()}/>
+                <FlatList data={data} renderItem={({item}) => <Text style={styles.item}>{account_map[item.acct_id] + " - " + item.vendor_name + " " + item.category[0] + ": " + item.amount}</Text>} keyExtractor={(item, index) => index.toString()}/>
             )
 
         } else {
