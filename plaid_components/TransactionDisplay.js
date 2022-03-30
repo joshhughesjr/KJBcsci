@@ -1,19 +1,20 @@
 import React from 'react';
 
-import {Text, View, StyleSheet, ActivityIndicator} from 'react-native';
+import {Text, View, StyleSheet, ActivityIndicator, Dimensions} from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlatList } from 'react-native-gesture-handler';
 
+import TransactionItem from './TransactionItem';
+
 const styles = StyleSheet.create({
     container: {
-     flex: 1,
-     paddingTop: 22
+        width: Dimensions.get('window').width,
     },
     item: {
-      padding: 10,
-      fontSize: 18,
-      height: 44,
+        padding: 10,
+        fontSize: 18,
+        height: 44,
     },
   });
 
@@ -29,7 +30,7 @@ export default class TransactionDisplay extends React.Component {
     formatData(data) {
         if(data) {
             //return data;
-            return data.map(transaction => ({acct_id: transaction.account_id, vendor_name: transaction.name, category: transaction.category, amount: transaction.amount}))
+            return data.map(transaction => ({acct_id: transaction.account_id, vendor_name: transaction.name, category: transaction.category, amount: transaction.amount, date: transaction.date}))
             //return data.map(acct => ({name: acct.name, type: acct.type, balance: acct.balances.current}));
         } else {
             return null;
@@ -49,7 +50,6 @@ export default class TransactionDisplay extends React.Component {
                 this.setState({accessToken: token});
 
                 var data = await this.getTransactions(token);
-                console.log(data)
                 var formatted = this.formatData(data);
                 this.setState({transactionData: JSON.stringify(formatted)})
 
@@ -122,7 +122,7 @@ export default class TransactionDisplay extends React.Component {
 
         } else if (this.state.transactionData != "" && this.state.account_map != null) {
             var data = JSON.parse(this.state.transactionData)
-            
+            console.log(data)
 
             var account_map = JSON.parse(this.state.account_map);
 
@@ -132,9 +132,9 @@ export default class TransactionDisplay extends React.Component {
 
             // Displaying Data State
             return (
-                <FlatList data={data} renderItem={({item}) => <Text style={styles.item}>{account_map[item.acct_id] + " - " + item.vendor_name + " " + item.category[0] + ": " + item.amount}</Text>} keyExtractor={(item, index) => index.toString()}/>
+                <FlatList style={styles.container} data={data} renderItem={({item}) => <TransactionItem account_id={account_map[item.acct_id]} date={item.date} vendor_name={item.vendor_name} category={item.category[0]} amount={item.amount}/>} keyExtractor={(item, index) => index.toString()}/>
             )
-
+                // <Text style={styles.item}>{account_map[item.acct_id] + " - " + item.vendor_name + " " + item.category[0] + ": " + item.amount}</Text>
         } else {
             
             // Loading State
