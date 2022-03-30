@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity, Dimensions } from 'react-nati
 import AppRegistry from 'react-native';
 import moment from 'moment';
 import {Agenda, Calendar, CalendarList} from 'react-native-calendars';
-import type Moment from 'moment';
+import Moment from 'moment';
 const width = Dimensions.get('window').width;
 let fetchedDates = ["2022-03-15", "2022-03-16", "2022-03-17", "2022-03-18"];
 let markedDatesArray = [];
@@ -20,8 +20,8 @@ let markedDatesArray = [];
 }
 */
 
-export default class CalenderScreen extends Component<State> {
-  state: State = {
+export default class CalenderScreen extends Component {
+  state = {
     items: undefined
   };
   render() {
@@ -30,7 +30,6 @@ export default class CalenderScreen extends Component<State> {
         selected={moment().format("YYYY-MM-DD")}
         items={this.state.items}
         loadItemsForMonth={this.loadItems}
-        selected={'2022-03-16'}
         renderItem={this.renderItem}
         renderEmptyDate={this.renderEmptyDate}
         rowHasChanged={this.rowHasChanged}
@@ -56,7 +55,7 @@ export default class CalenderScreen extends Component<State> {
   );
 };
 
-loadItems = (day: DateData) => {
+loadItems = (day) => {
     const items = this.state.items || {};
 
     setTimeout(() => {
@@ -78,7 +77,7 @@ loadItems = (day: DateData) => {
         }
       }
       
-      const newItems: AgendaSchedule = {};
+      const newItems = {};
       Object.keys(items).forEach(key => {
         newItems[key] = items[key];
       });
@@ -97,11 +96,11 @@ loadItems = (day: DateData) => {
     );
   }
 
-  rowHasChanged = (r1: AgendaEntry, r2: AgendaEntry) => {
+  rowHasChanged = (r1, r2) => {
     return r1.name !== r2.name;
   }
 
-  timeToString(time: number) {
+  timeToString(time) {
     const date = new Date(time);
     return date.toISOString().split('T')[0];
   }

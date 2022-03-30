@@ -1,10 +1,13 @@
 import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 
+import PlaidLinkHandler from '../plaid_components/PlaidLinkHandler.js';
+
 const AddAccountScreen = () => {
   return (
     <View style={styles.center}>
-      <Text>This is the Add Account screen</Text>
+      <Text>This is the Add Accounts screen</Text>
+      <PlaidLinkHandler/>
     </View>
   );
 };
