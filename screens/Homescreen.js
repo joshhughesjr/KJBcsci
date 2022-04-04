@@ -1,6 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, Button } from "react-native";
 import Svg, { G, Circle } from "react-native-svg";
+
+import CategoriesDisplay from "../plaid_components/CategoriesDisplay"
 
 const App = () => {
   const radius = 70;
@@ -26,6 +28,7 @@ const App = () => {
   const billsAngle = (remaining / total) * 360;
   const regularAngle = spentAngle + billsAngle;
 
+  /*
   return (
     <View style={styles.container}>
       <View style={styles.graphWrapper}>
@@ -92,7 +95,10 @@ const App = () => {
         <Text style={styles.label}>${total}</Text>
       </View>
     </View>
-  );
+  )*/
+  return (
+    <CategoriesDisplay></CategoriesDisplay>
+  )
 };
 
 export default App;
