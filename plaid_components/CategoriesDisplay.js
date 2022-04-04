@@ -5,7 +5,6 @@ import {Text, View, StyleSheet, ActivityIndicator, Dimensions} from 'react-nativ
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlatList } from 'react-native-gesture-handler';
 
-import TransactionItem from './TransactionItem';
 
 const styles = StyleSheet.create({
     container: {
