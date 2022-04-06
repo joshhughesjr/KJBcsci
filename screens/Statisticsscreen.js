@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
     paddingTop: Constants.statusBarHeight,
     backgroundColor: '#fff',
     padding: 8,
+
   },
   paragraph: {
     margin: 24,
@@ -64,3 +65,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+

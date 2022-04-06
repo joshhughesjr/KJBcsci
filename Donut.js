@@ -113,4 +113,7 @@ export default function Donut({
 
 const styles = StyleSheet.create({
   text: { fontWeight: '900', textAlign: 'center' },
+
+
 });
+
