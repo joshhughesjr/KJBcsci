@@ -32,7 +32,7 @@ export default function Statisticsscreen() {
     style={styles.container}>
       <StatusBar hidden/>
       <View style={{
-        flexDirection: 'colib', 
+        flexDirection: 'column', 
         justifyContent: 'space-evenly', 
         flexWrap: 'wrap', 
         alignItems: 'center'}}>
