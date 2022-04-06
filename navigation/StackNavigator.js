@@ -4,7 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Home from "../screens/Homescreen";
 import GoalsScreen from "../screens/Goalsscreen";
 import StatisticsScreen from "../screens/Statisticsscreen";
-import CalenderScreen from "../screens/Calenderscreen";
+import CalendarScreen from "../screens/Calendarscreen";
 import AccountScreen from "../screens/Accountscreen";
 import DetailsScreen from "../screens/Detailsscreen";
 import AddAccountScreen from "../screens/AddAccountscreen";
@@ -49,10 +49,10 @@ const StatisticsStackNavigator = () => {
   );
 }
 
-const CalenderStackNavigator = () => {
+const CalendarStackNavigator = () => {
   return (
     <Stack.Navigator screenOptions={screenOptionStyle}>
-      <Stack.Screen name="Calendar" component={CalenderScreen} options={{headerShown:false}} />
+      <Stack.Screen name="Calendar" component={CalendarScreen} options={{headerShown:false}} />
     </Stack.Navigator>
   );
 }
@@ -69,4 +69,4 @@ const AccountStackNavigator = () => {
   );
 }
 
-export { HomeStackNavigator, GoalsStackNavigator, StatisticsStackNavigator, CalenderStackNavigator, AccountStackNavigator};
+export { HomeStackNavigator, GoalsStackNavigator, StatisticsStackNavigator, CalendarStackNavigator, AccountStackNavigator};
