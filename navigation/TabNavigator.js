@@ -6,8 +6,14 @@ import { HomeStackNavigator, GoalsStackNavigator, StatisticsStackNavigator, Cale
 
 const Tab = createBottomTabNavigator();
 
-const BottomTabNavigator = () => {
-  return (
+export default class BottomTabNavigator extends React.Component {
+
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
     <Tab.Navigator>
       
       <Tab.Screen 
@@ -47,6 +53,6 @@ const BottomTabNavigator = () => {
       />
     </Tab.Navigator>
   );
-};
+  }
+}
 
-export default BottomTabNavigator;
