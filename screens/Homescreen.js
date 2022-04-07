@@ -28,7 +28,7 @@ const App = () => {
   const billsAngle = (remaining / total) * 360;
   const regularAngle = spentAngle + billsAngle;
 
-  /*
+  
   return (
     <View style={styles.container}>
       <View style={styles.graphWrapper}>
@@ -95,10 +95,13 @@ const App = () => {
         <Text style={styles.label}>${total}</Text>
       </View>
     </View>
-  )*/
+  )
+
+  /*
   return (
     <CategoriesDisplay></CategoriesDisplay>
   )
+  */
 };
 
 export default App;
