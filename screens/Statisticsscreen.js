@@ -55,13 +55,16 @@ export default class Statisticsscreen extends React.Component {
 
     // Check for transactionData
     if (this.state.transactionData == null) {
-      this.state = {transactionData: await getTransactionData()};
-
-      console.log(this.processTransactionData(this.state.transactionData))
+      this.setState({transactionData: await getTransactionData()});
     }
+    
+    // Process Transaction Data
+    this.setState({transactionStats: this.processTransactionData(this.state.transactionData)});
   }
 
   processTransactionData(transaction_data) {
+
+    // The total costs based on categories
     var category_totals = {};
 
     var expense_total = 0;
@@ -78,39 +81,78 @@ export default class Statisticsscreen extends React.Component {
                 // Else, add the category to the category data
                 category_totals[transaction_data[i].category[0]] = Number(transaction_data[i].amount);
             }
-
+            
+            // Also add this expense to the expense total
             expense_total += Number(transaction_data[i].amount);
 
         }
         
     }
     
+    // The percentage of expense_total that the category contributes
+    var output = [];
 
-    return category_totals;
+    for (const [key, value] of Object.entries(category_totals)) {
+      output.push({
+        percentage: (value / expense_total) * 100,
+        color: 'tomato',
+        max: 100,
+        radius: 130
+      })
+    }
+
+    console.log(output)
+
+    // Sort the output in descending order based on percentage
+    output.sort((a,b) => {
+      if( a.percentage > b.percentage) {
+        return -1;
+      }
+
+      if( a.percentage < b.percentage) {
+        return 1
+      }
+
+      return 0
+    })
+    return output;
   }
 
   render() {
-    return (
-      <ScrollView 
-      style={styles.container}>
-        <StatusBar hidden/>
-        <View style={{
-          flexDirection: 'column', 
-          justifyContent: 'space-evenly', 
-          flexWrap: 'wrap', 
-          alignItems: 'center'}}>
-  
-          {data.map((p, i) => {
-            return <Donut key={i} 
-            percentage={p.percentage} 
-            color={p.color} 
-            radius={p.radius}
-            delay={500 + 100} 
-            max={p.max}/>
-          })}
+
+
+    if (this.state.transactionData != null && this.state.transactionStats != null) {
+      var stats = this.state.transactionStats;
+      return (
+        <View style={{flex:1}}>
+        <ScrollView 
+        style={styles.container}>
+          <StatusBar hidden/>
+          <View style={{
+            flexDirection: 'column', 
+            justifyContent: 'space-evenly', 
+            flexWrap: 'wrap', 
+            alignItems: 'center'}}>
+    
+            {stats.map((p, i) => {
+              return <Donut key={i} 
+              percentage={p.percentage} 
+              color={p.color} 
+              radius={100 + 100 * (p.percentage / 100)}
+              delay={200 * i} 
+              max={p.max}/>
+            })}
+          </View>
+        </ScrollView>
         </View>
-      </ScrollView>
-    );
+      );
+    } else {
+      return <Text>Loading...</Text>
+    }
+
+    console.log(this.state.transactionData == null + " " + this.state.transactionStats == null);
+    
+    
   }
 }
 
