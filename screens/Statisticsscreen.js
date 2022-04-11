@@ -135,13 +135,16 @@ export default class Statisticsscreen extends React.Component {
             alignItems: 'center'}}>
     
             {stats.map((p, i) => {
-              return <Donut key={i} 
-              percentage={p.percentage} 
-              color={p.color} 
-              radius={100 + 100 * (p.percentage / 100)}
-              delay={200 * i} 
-              max={p.max}/>
-            })}
+              return (
+                <Donut key={i} 
+                percentage={p.percentage} 
+                color={p.color} 
+                radius={ 75 }
+                delay={200 * i} 
+                max={p.max}/>
+              )
+            })
+            }
           </View>
         </ScrollView>
         </View>
