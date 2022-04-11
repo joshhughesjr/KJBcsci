@@ -22,6 +22,8 @@ export async function getTransactionData() {
     // Get access_token from local storage
     try {
 
+        console.log("ST")
+
         // If the access token exists, then process it
         const token = await AsyncStorage.getItem('@access_token')
 
