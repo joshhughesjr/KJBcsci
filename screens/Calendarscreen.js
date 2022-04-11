@@ -13,7 +13,7 @@ const getMonthData = () => {
   return dataToReturn;
 };
 
-const CalendarScreen = props => {   
+const CalendarScreen = () => {   
   const monthData = getMonthData();
 
   const renderItem = (item) => {
