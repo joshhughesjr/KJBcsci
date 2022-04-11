@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlatList } from 'react-native-gesture-handler';
 
 import TransactionItem from './TransactionItem';
+import {getTransactionData} from './RequestUtil'
 
 const styles = StyleSheet.create({
     container: {
@@ -42,6 +43,19 @@ export default class TransactionDisplay extends React.Component {
         // Get access_token from local storage
         try {
 
+            const token = await AsyncStorage.getItem('@access_token')
+
+            if(token !== null) {
+
+                this.setState({accessToken: token});
+
+                var data = await getTransactionData();
+                console.log(data)
+                this.setState({transactionData: JSON.stringify(data)})
+            
+            }
+            
+            /*
             // If the access token exists, then process it
             const token = await AsyncStorage.getItem('@access_token')
 
@@ -54,6 +68,7 @@ export default class TransactionDisplay extends React.Component {
                 this.setState({transactionData: JSON.stringify(formatted)})
 
             }
+            */
 
         } catch(e) {
             console.log(e);
