@@ -48,8 +48,13 @@ export default class TransactionDisplay extends React.Component {
             if(token !== null) {
 
                 this.setState({accessToken: token});
+                
+                var testStart = new Date()
+                testStart.setDate(1)
 
-                var data = await getTransactionData();
+                var testEnd = new Date();
+
+                var data = await getTransactionData(testStart, testEnd);
                 console.log(data)
                 this.setState({transactionData: JSON.stringify(data)})
             
