@@ -17,24 +17,41 @@ function getFormattedDate(date) {
     }
     return [year, month, day].join('-');
   }
-  
-export async function getTransactionData() {
+
+
+// Takes javascript date objects and returns transaction data within that date range
+// Requires access token
+// If a valid date range is specified, then it will use it, else it will return the data from the last month of transactions
+export async function getTransactionData(start = null, end = null) {
+
+    console.log(start)
+    console.log(end)
+    if (start == null || end == null) {
+        var startDate = new Date();
+        
+        startDate.setMonth(startDate.getMonth() - 1);
+
+        var endDate = new Date();
+
+        return await getTransactionDataRange(startDate, endDate);
+    } else {
+        return await getTransactionDataRange(start, end);
+    }
+    
+}
+
+
+async function getTransactionDataRange(start, end) {
     // Get access_token from local storage
     try {
-
-        console.log("ST")
 
         // If the access token exists, then process it
         const token = await AsyncStorage.getItem('@access_token')
 
         if(token !== null) {
-            
-            var startDate = new Date();
-            //endDate.setDate(endDate.getDate() - 10);
-            startDate.setMonth(startDate.getMonth() - 1);
 
-            var formattedStart = getFormattedDate(startDate);
-            var formattedEnd = getFormattedDate(new Date())
+            var formattedStart = getFormattedDate(start);
+            var formattedEnd = getFormattedDate(end);
         
 
             const response = await fetch("https://birdboombox.com/api/getTransactions", {
