@@ -94,6 +94,7 @@ export default class Statisticsscreen extends React.Component {
 
     for (const [key, value] of Object.entries(category_totals)) {
       output.push({
+        name: key,
         percentage: (value / expense_total) * 100,
         color: 'tomato',
         max: 100,
@@ -101,7 +102,6 @@ export default class Statisticsscreen extends React.Component {
       })
     }
 
-    console.log(output)
 
     // Sort the output in descending order based on percentage
     output.sort((a,b) => {
@@ -136,12 +136,16 @@ export default class Statisticsscreen extends React.Component {
     
             {stats.map((p, i) => {
               return (
-                <Donut key={i} 
-                percentage={p.percentage} 
-                color={p.color} 
-                radius={ 75 }
-                delay={200 * i} 
-                max={p.max}/>
+                <View key={i} style={{flexDirection: "row", alignItems:"stretch"}}>
+                  <Donut 
+                  percentage={p.percentage} 
+                  color={p.color} 
+                  radius={ 75 }
+                  delay={200 * i} 
+                  max={p.max}/>
+
+                  <Text style={{textAlign:"right"}}>{p.name}</Text>
+                </View>
               )
             })
             }
@@ -151,10 +155,7 @@ export default class Statisticsscreen extends React.Component {
       );
     } else {
       return <Text>Loading...</Text>
-    }
-
-    console.log(this.state.transactionData == null + " " + this.state.transactionStats == null);
-    
+    }    
     
   }
 }
