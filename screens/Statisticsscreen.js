@@ -1,6 +1,6 @@
 
 import * as React from 'react';
-import { Text, StatusBar, View, StyleSheet, ScrollView } from 'react-native';
+import { Text, StatusBar, View, StyleSheet, ScrollView, Pressable } from 'react-native';
 import Constants from 'expo-constants';
 import Donut from '../Donut'
 
@@ -23,26 +23,54 @@ const styles = StyleSheet.create({
 });
 
 const data = [{
+  name: "Item 1",
   percentage: 36,
   color: 'tomato',
   max: 100,
   radius: 130,
 }, {
+  name: "Item 2",
   percentage: 27,
   color: 'skyblue',
   max: 100,
   radius: 115,
 }, {
+  name: "Item 3",
   percentage: 12,
   color: 'gold',
   max: 100,
   radius: 100,
 }, {
+  name: "Item 4",
   percentage: 10,
   color: '#222',
   max: 100,
   radius: 85,
-}]
+}, {
+  name: "Item 5",
+  percentage: 36,
+  color: 'tomato',
+  max: 100,
+  radius: 130,
+}, {
+  name: "Item 6",
+  percentage: 27,
+  color: 'skyblue',
+  max: 100,
+  radius: 115,
+}, {
+  name: "Item 7",
+  percentage: 12,
+  color: 'gold',
+  max: 100,
+  radius: 100,
+}, {
+  name: "Item 8",
+  percentage: 10,
+  color: '#222',
+  max: 100,
+  radius: 85,
+}, ]
 
 export default class Statisticsscreen extends React.Component {
 
@@ -55,11 +83,11 @@ export default class Statisticsscreen extends React.Component {
 
     // Check for transactionData
     if (this.state.transactionData == null) {
-      this.setState({transactionData: await getTransactionData()});
+      //this.setState({transactionData: await getTransactionData()});
     }
-    
+    // this.processTransactionData(this.state.transactionData)
     // Process Transaction Data
-    this.setState({transactionStats: this.processTransactionData(this.state.transactionData)});
+    this.setState({transactionStats: data});
   }
 
   processTransactionData(transaction_data) {
@@ -118,10 +146,14 @@ export default class Statisticsscreen extends React.Component {
     return output;
   }
 
+  showCategoryDetails(index) {
+    console.log("Details for " + index)
+  }
+
   render() {
 
 
-    if (this.state.transactionData != null && this.state.transactionStats != null) {
+    if (this.state.transactionStats != null) {
       var stats = this.state.transactionStats;
       return (
         <View style={{flex:1}}>
@@ -132,11 +164,20 @@ export default class Statisticsscreen extends React.Component {
             flexDirection: 'column', 
             justifyContent: 'space-evenly', 
             flexWrap: 'wrap', 
-            alignItems: 'center'}}>
+            alignItems: 'center',
+            paddingBottom: 40}}>
     
             {stats.map((p, i) => {
               return (
-                <View key={i} style={{flexDirection: "row", alignItems:"stretch"}}>
+                <Pressable style={{
+                  width:"100%",
+                  paddingHorizontal:20
+                  }} key={i} onPress={() => this.showCategoryDetails(i)}>
+                <View style={{
+                  flexDirection: "row", 
+                  alignItems:"center"
+                  }}>
+                  
                   <Donut 
                   percentage={p.percentage} 
                   color={p.color} 
@@ -144,8 +185,9 @@ export default class Statisticsscreen extends React.Component {
                   delay={200 * i} 
                   max={p.max}/>
 
-                  <Text style={{textAlign:"right"}}>{p.name}</Text>
+                  <Text style={{textAlign:"right", fontSize:20, marginLeft:"20%"}}>{p.name}</Text>
                 </View>
+                </Pressable>
               )
             })
             }
