@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
   },
 });
 
+// Mock data
 const data = [{
   name: "Item 1",
   percentage: 36,
@@ -83,11 +84,11 @@ export default class Statisticsscreen extends React.Component {
 
     // Check for transactionData
     if (this.state.transactionData == null) {
-      //this.setState({transactionData: await getTransactionData()});
+      this.setState({transactionData: await getTransactionData()});
     }
-    // this.processTransactionData(this.state.transactionData)
+    
     // Process Transaction Data
-    this.setState({transactionStats: data});
+    this.setState({transactionStats: this.processTransactionData(this.state.transactionData)});
   }
 
   processTransactionData(transaction_data) {
@@ -124,9 +125,9 @@ export default class Statisticsscreen extends React.Component {
       output.push({
         name: key,
         percentage: (value / expense_total) * 100,
-        color: 'tomato',
+        color: '#6ebf4a',
         max: 100,
-        radius: 130
+        radius: 120
       })
     }
 
@@ -142,12 +143,31 @@ export default class Statisticsscreen extends React.Component {
       }
 
       return 0
-    })
+    });
+
     return output;
   }
 
-  showCategoryDetails(index) {
-    console.log("Details for " + index)
+  // Opens a separate window where individual transactions are listed based on a category
+  showCategoryDetails(category_name) {
+    console.log("Details for " + category_name)
+
+
+    var transactions = []
+
+    // Go through all of the transactions
+    for(var i = 0; i < this.state.transactionData.length; i++) {
+      // If the transaction's category matches, add it to the list of transactions
+
+      if(this.state.transactionData[i].category[0] == category_name) {
+        transactions.push(this.state.transactionData[i]);
+      }
+    }
+
+    for(var i = 0; i < transactions.length; i++) {
+      console.log(transactions[i]);
+    }
+
   }
 
   render() {
@@ -173,7 +193,7 @@ export default class Statisticsscreen extends React.Component {
                   width:"100%",
                   paddingHorizontal:20,
                   marginVertical: 15,
-                  }} key={i} onPress={() => this.showCategoryDetails(i)}>
+                  }} key={i} onPress={() => this.showCategoryDetails(p.name)}>
                 <View style={{
                   flexDirection: "row", 
                   alignItems:"center"
@@ -186,10 +206,10 @@ export default class Statisticsscreen extends React.Component {
                   delay={200 * i} 
                   max={p.max}/>
 
-                  <Text style={{textAlign:"right", fontSize:20, marginLeft:"20%"}}>{p.name}</Text>
+                  <Text style={{textAlign:"center", fontSize:20, marginLeft:"10%"}}>{p.name}</Text>
                   <Icon style={{
                     position:"absolute",
-                    right: 20,
+                    right: 10,
                     }} name={"angle-right"} color={'lightgrey'} size={40}/>
                 </View>
                 </Pressable>
