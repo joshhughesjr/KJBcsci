@@ -5,7 +5,7 @@ import Constants from 'expo-constants';
 import Donut from '../Donut'
 
 import { getTransactionData } from '../plaid_components/RequestUtil';
-
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const styles = StyleSheet.create({
   container: {
@@ -171,7 +171,8 @@ export default class Statisticsscreen extends React.Component {
               return (
                 <Pressable style={{
                   width:"100%",
-                  paddingHorizontal:20
+                  paddingHorizontal:20,
+                  marginVertical: 15,
                   }} key={i} onPress={() => this.showCategoryDetails(i)}>
                 <View style={{
                   flexDirection: "row", 
@@ -186,6 +187,10 @@ export default class Statisticsscreen extends React.Component {
                   max={p.max}/>
 
                   <Text style={{textAlign:"right", fontSize:20, marginLeft:"20%"}}>{p.name}</Text>
+                  <Icon style={{
+                    position:"absolute",
+                    right: 20,
+                    }} name={"angle-right"} color={'lightgrey'} size={40}/>
                 </View>
                 </Pressable>
               )
