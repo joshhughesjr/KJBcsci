@@ -43,7 +43,7 @@ const GoalsStackNavigator = () => {
 const StatisticsStackNavigator = () => {
   return (
     <Stack.Navigator screenOptions={screenOptionStyle}>
-      <Stack.Screen name="This Months Statistics" component={StatisticsScreen} />
+      <Stack.Screen name="This Month's Statistics" component={StatisticsScreen} />
       <Stack.Screen name="Details" component={DetailsScreen} />
     </Stack.Navigator>
   );

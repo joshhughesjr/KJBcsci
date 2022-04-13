@@ -77,7 +77,15 @@ export default class Statisticsscreen extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {transactionData: null, transactionStats: null};
+    // transactionData is the raw transaction data retrieved from Plaid
+
+    // transactionStats is the aggregate of all transaction costs based on cateogry
+    // It is a map from category name -> transaction sum for that category
+
+    // The "Other" category is a grouping of categories that contribute a very small amount to the overall transactions.
+    // Other is not from transactionData, it is calculated when transactionStats is being calculated
+    // otherCategories contains the set of categories that are considered "Other"
+    this.state = {transactionData: null, transactionStats: null, otherCategories: null};
   }
 
   async componentDidMount() {
@@ -96,7 +104,9 @@ export default class Statisticsscreen extends React.Component {
     // The total costs based on categories
     var category_totals = {};
 
+    // The total expenses across all categories
     var expense_total = 0;
+
     // Sum up the total costs for each category
     for ( var i = 0; i < transaction_data.length; i++) {
 
@@ -118,13 +128,63 @@ export default class Statisticsscreen extends React.Component {
         
     }
     
+    // Get a list of the category totals
+    // [0] -> Name of category
+    // [1] -> Category total
+    var category_totals_list = Object.entries(category_totals);
+
+    // Sort the category totals in descending order based on percentage
+    category_totals_list.sort((a,b) => {
+      if( a[1] > b[1]) {
+        return -1;
+      }
+
+      if( a[1] < b[1]) {
+        return 1
+      }
+
+      return 0
+    });
+
+    var cutoff = 3;
+    // If there are more than n categories, then everything other than the top n will be grouped into the "Other" category
+    if (category_totals_list.length > cutoff) {
+
+      // Set of categories that are grouped into "Other"
+      // This is needed to retrieve all transactions in the "Other" category later
+      var otherCategories = new Set();
+
+      // The total expenses for all categories in "Other"
+      var otherTotal = 0;
+
+      // Go through the list in reverse order until the cutoff point is reached
+      for(var i = category_totals_list.length - 1; i >= cutoff; i--) {
+        // Add that category to the set of categories in Other
+        otherCategories.add(category_totals_list[i][0]);
+
+        // Add that category's transaction total to otherTotal
+        otherTotal += category_totals_list[i][1]
+        
+        // Remove that category from the list
+        category_totals_list.pop();
+      }
+
+      // Add the Other Category
+      category_totals_list.push(["Other", otherTotal]);
+
+      this.setState({otherCategories: otherCategories});
+
+    }
+
+    
+
     // The percentage of expense_total that the category contributes
     var output = [];
 
-    for (const [key, value] of Object.entries(category_totals)) {
+    for (var i = 0; i < category_totals_list.length; i++) {
       output.push({
-        name: key,
-        percentage: (value / expense_total) * 100,
+        name: category_totals_list[i][0],
+        percentage: (category_totals_list[i][1] / expense_total) * 100,
         color: '#6ebf4a',
         max: 100,
         radius: 120
@@ -132,18 +192,7 @@ export default class Statisticsscreen extends React.Component {
     }
 
 
-    // Sort the output in descending order based on percentage
-    output.sort((a,b) => {
-      if( a.percentage > b.percentage) {
-        return -1;
-      }
-
-      if( a.percentage < b.percentage) {
-        return 1
-      }
-
-      return 0
-    });
+    
 
     return output;
   }
