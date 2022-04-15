@@ -1,14 +1,16 @@
 
 import * as React from 'react';
-import { Text, StatusBar, View, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { Text, StatusBar, Modal, View, StyleSheet, ScrollView, Pressable, FlatList } from 'react-native';
 import Constants from 'expo-constants';
 import Donut from '../Donut'
 
 import { getTransactionData } from '../plaid_components/RequestUtil';
+import TransactionItem from '../plaid_components/TransactionItem'
+
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const styles = StyleSheet.create({
-  container: {
+  flatList: {
     flex: 1,
     paddingTop: Constants.statusBarHeight,
     backgroundColor: '#fff',
@@ -19,92 +21,138 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
+  }, centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
   },
+  modalView: {
+    margin: 20,
+    width:"90%",
+    height:"75%",
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    backgroundColor: "#6ebf4a"
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  },
+  flatList: {
+    width:"100%",
+    margin: 10
+  },
+  amount: {
+    fontSize: 20,
+    textAlign: 'right',
+    position: 'absolute',
+    paddingRight: 20,
+    paddingTop: 20,
+    right: 0
+  },
+  item: {
+    fontSize: 18,
+  }, 
+  itemContainer: {
+    backgroundColor: '#DDDDDD',
+    paddingLeft: 10,
+    borderRadius: 10,
+    paddingRight: 10,
+    marginTop: 5,
+    marginBottom: 2,
+    height: 100,
+},
+  
 });
 
 // Mock data
 const data = [{
-  vendor_name: "NAME",
+  vendor_name: "V#",
   category: "A",
   amount:2
 }, {
-  vendor_name: "NAME",
+  vendor_name: "EQD",
   category: "A",
   amount:2
 }, {
-  vendor_name: "NAME",
+  vendor_name: "ME",
   category: "B",
   amount:3
 }, {
-  vendor_name: "NAME",
+  vendor_name: "NE",
   category: "C",
   amount:20
 }, {
-  vendor_name: "NAME",
+  vendor_name: "NME",
   category: "B",
   amount:2
 }, {
-  vendor_name: "NAME",
+  vendor_name: "NME",
   category: "D",
   amount:5
 }, {
-  vendor_name: "NAME",
+  vendor_name: "AME",
+  category: "A",
+  amount:21
+}, {
+  vendor_name: "NAM32E",
+  category: "A",
+  amount:2
+}, {
+  vendor_name: "NA12E",
+  category: "A",
+  amount:2
+}, {
+  vendor_name: "N1ME",
+  category: "B",
+  amount:3
+}, {
+  vendor_name: "NAEME",
+  category: "C",
+  amount:20
+}, {
+  vendor_name: "N1E",
+  category: "B",
+  amount:2
+}, {
+  vendor_name: "N3E",
+  category: "D",
+  amount:5
+}, {
+  vendor_name: "12ME",
   category: "A",
   amount:21
 }];
 
-/*
-
-const data = [{
-  name: "Item 1",
-  percentage: 36,
-  color: 'tomato',
-  max: 100,
-  radius: 130,
-}, {
-  name: "Item 2",
-  percentage: 27,
-  color: 'skyblue',
-  max: 100,
-  radius: 115,
-}, {
-  name: "Item 3",
-  percentage: 12,
-  color: 'gold',
-  max: 100,
-  radius: 100,
-}, {
-  name: "Item 4",
-  percentage: 10,
-  color: '#222',
-  max: 100,
-  radius: 85,
-}, {
-  name: "Item 5",
-  percentage: 36,
-  color: 'tomato',
-  max: 100,
-  radius: 130,
-}, {
-  name: "Item 6",
-  percentage: 27,
-  color: 'skyblue',
-  max: 100,
-  radius: 115,
-}, {
-  name: "Item 7",
-  percentage: 12,
-  color: 'gold',
-  max: 100,
-  radius: 100,
-}, {
-  name: "Item 8",
-  percentage: 10,
-  color: '#222',
-  max: 100,
-  radius: 85,
-}, ]
-*/
+const CategoryItem = (props) => {
+  return (
+          <View style={styles.itemContainer}>
+            <Text style={styles.amount}>{ "$  " + props.amount * -1}</Text>
+            <Text style={styles.item}>{props.vendor_name}</Text>
+          </View>
+  )
+}
 
 export default class Statisticsscreen extends React.Component {
 
@@ -118,7 +166,7 @@ export default class Statisticsscreen extends React.Component {
     // The "Other" category is a grouping of categories that contribute a very small amount to the overall transactions.
     // Other is not from transactionData, it is calculated when transactionStats is being calculated
     // otherCategories contains the set of categories that are considered "Other"
-    this.state = {transactionData: null, transactionStats: null, otherCategories: null};
+    this.state = {transactionData: null, transactionStats: null, otherCategories: null, modalVisible: false, modalData: null};
   }
 
   async componentDidMount() {
@@ -252,17 +300,48 @@ export default class Statisticsscreen extends React.Component {
       console.log(transactions[i]);
     }
 
+
+    this.setState({modalData: transactions})
+    this.setState({modalVisible: !this.state.modalVisible})
+
   }
+
+
 
   render() {
 
 
     if (this.state.transactionStats != null) {
+      
       var stats = this.state.transactionStats;
       return (
+
         <View style={{flex:1}}>
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.modalVisible}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+            this.setState({modalVisible: !this.state.modalVisible});
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+            <FlatList style={styles.flatList} data={this.state.modalData} renderItem={({item}) => <CategoryItem vendor_name={item.vendor_name} amount={item.amount}/>} keyExtractor={(item, index) => index.toString()}/>
+              <Pressable
+                style={[styles.button]}
+                onPress={() => this.setState({modalVisible: !this.state.modalVisible})}
+              >
+                <Text style={styles.textStyle}>Close Window</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+
         <ScrollView 
-        style={styles.container}>
+        style={styles.flatList}>
           <StatusBar hidden/>
           <View style={{
             flexDirection: 'column', 
@@ -277,11 +356,11 @@ export default class Statisticsscreen extends React.Component {
                   width:"100%",
                   paddingHorizontal:20,
                   marginVertical: 15,
-                  }} key={i} onPress={() => this.showCategoryDetails(p.name)}>
-                <View style={{
-                  flexDirection: "row", 
-                  alignItems:"center"
-                  }}>
+                  }} key={i} onPress={() => this.showCategoryDetails(p.name) }>
+                    <View style={{
+                      flexDirection: "row", 
+                      alignItems:"center"
+                    }}>
                   
                   <Donut 
                   percentage={p.percentage} 
