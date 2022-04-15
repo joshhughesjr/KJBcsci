@@ -24,6 +24,38 @@ const styles = StyleSheet.create({
 
 // Mock data
 const data = [{
+  vendor_name: "NAME",
+  category: "A",
+  amount:2
+}, {
+  vendor_name: "NAME",
+  category: "A",
+  amount:2
+}, {
+  vendor_name: "NAME",
+  category: "B",
+  amount:3
+}, {
+  vendor_name: "NAME",
+  category: "C",
+  amount:20
+}, {
+  vendor_name: "NAME",
+  category: "B",
+  amount:2
+}, {
+  vendor_name: "NAME",
+  category: "D",
+  amount:5
+}, {
+  vendor_name: "NAME",
+  category: "A",
+  amount:21
+}];
+
+/*
+
+const data = [{
   name: "Item 1",
   percentage: 36,
   color: 'tomato',
@@ -72,6 +104,7 @@ const data = [{
   max: 100,
   radius: 85,
 }, ]
+*/
 
 export default class Statisticsscreen extends React.Component {
 
@@ -92,15 +125,16 @@ export default class Statisticsscreen extends React.Component {
 
     // Check for transactionData
     if (this.state.transactionData == null) {
-      this.setState({transactionData: await getTransactionData()});
+      this.setState({transactionData: data});
+      
     }
     
     // Process Transaction Data
-    this.setState({transactionStats: this.processTransactionData(this.state.transactionData)});
+    this.setState({transactionStats: this.processTransactionData(data)});
   }
 
   processTransactionData(transaction_data) {
-
+    console.log(transaction_data)
     // The total costs based on categories
     var category_totals = {};
 
@@ -148,7 +182,8 @@ export default class Statisticsscreen extends React.Component {
 
     var cutoff = 3;
     // If there are more than n categories, then everything other than the top n will be grouped into the "Other" category
-    if (category_totals_list.length > cutoff) {
+    // If there is n + 1 items, then just show the categories because other would be one category anyways.
+    if (category_totals_list.length > cutoff + 1) {
 
       // Set of categories that are grouped into "Other"
       // This is needed to retrieve all transactions in the "Other" category later
