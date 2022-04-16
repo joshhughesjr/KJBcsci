@@ -1,6 +1,6 @@
 
-import * as React from 'react';
-import { Text, StatusBar, Modal, View, StyleSheet, ScrollView, Pressable, FlatList } from 'react-native';
+import React, {useState} from 'react';
+import { Text, StatusBar, ActivityIndicator, Modal, View, StyleSheet, ScrollView, Pressable, FlatList } from 'react-native';
 import Constants from 'expo-constants';
 import Donut from '../Donut'
 
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     position: 'absolute',
     paddingRight: 20,
-    paddingTop: 20,
+    paddingTop: 60,
     right: 0
   },
   item: {
@@ -88,69 +88,100 @@ const styles = StyleSheet.create({
 
 // Mock data
 const data = [{
-  vendor_name: "V#",
+  vendor_name: "VendorABC",
   category: "A",
   amount:2
 }, {
-  vendor_name: "EQD",
+  vendor_name: "VendorABC",
   category: "A",
   amount:2
 }, {
-  vendor_name: "ME",
+  vendor_name: "VendorABC",
   category: "B",
   amount:3
 }, {
-  vendor_name: "NE",
+  vendor_name: "VendorABC",
   category: "C",
   amount:20
 }, {
-  vendor_name: "NME",
+  vendor_name: "VendorABC",
   category: "B",
   amount:2
 }, {
-  vendor_name: "NME",
+  vendor_name: "VendorABC",
   category: "D",
   amount:5
 }, {
-  vendor_name: "AME",
+  vendor_name: "VendorABC",
   category: "A",
   amount:21
 }, {
-  vendor_name: "NAM32E",
+  vendor_name: "VendorABC",
   category: "A",
   amount:2
 }, {
-  vendor_name: "NA12E",
+  vendor_name: "VendorABC",
   category: "A",
   amount:2
 }, {
-  vendor_name: "N1ME",
+  vendor_name: "VendorABC",
   category: "B",
   amount:3
 }, {
-  vendor_name: "NAEME",
+  vendor_name: "VendorABC",
   category: "C",
   amount:20
 }, {
-  vendor_name: "N1E",
+  vendor_name: "VendorABC",
   category: "B",
   amount:2
 }, {
-  vendor_name: "N3E",
+  vendor_name: "VendorABC",
   category: "D",
   amount:5
 }, {
-  vendor_name: "12ME",
+  vendor_name: "VendorABC",
   category: "A",
   amount:21
 }];
 
 const CategoryItem = (props) => {
   return (
-          <View style={styles.itemContainer}>
+          <View style={[styles.itemContainer, {flexDirection: 'column', }]}>
+            
             <Text style={styles.amount}>{ "$  " + props.amount * -1}</Text>
             <Text style={styles.item}>{props.vendor_name}</Text>
+            <Text style={styles.item}>{props.category[0]}</Text>
           </View>
+  )
+}
+
+const DetailModal = (props) => {
+
+  return (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={props.visible}
+      onRequestClose={() => {
+        Alert.alert("Modal has been closed.");
+        props.closeModalCallback(!props.visible)
+      }}
+      >
+      <View style={styles.centeredView}>
+        <View style={styles.modalView}>
+          
+          <FlatList style={styles.flatList} data={props.modalData} renderItem={({item}) => <CategoryItem vendor_name={item.vendor_name} amount={item.amount} category={item.category}/>} keyExtractor={(item, index) => index.toString()}/>
+          <Pressable
+            style={[styles.button]}
+            onPress={() => props.closeModalCallback(!props.visible)}
+          >
+            <Text style={styles.textStyle}>Close Window</Text>
+          </Pressable>
+        </View>
+      </View>
+
+    </Modal>
   )
 }
 
@@ -167,22 +198,27 @@ export default class Statisticsscreen extends React.Component {
     // Other is not from transactionData, it is calculated when transactionStats is being calculated
     // otherCategories contains the set of categories that are considered "Other"
     this.state = {transactionData: null, transactionStats: null, otherCategories: null, modalVisible: false, modalData: null};
+    
+    this.setModalVisible = this.setModalVisible.bind(this);
   }
 
   async componentDidMount() {
 
     // Check for transactionData
     if (this.state.transactionData == null) {
-      this.setState({transactionData: data});
+      this.setState({transactionData: await getTransactionData()});
       
     }
     
     // Process Transaction Data
-    this.setState({transactionStats: this.processTransactionData(data)});
+    this.setState({transactionStats: this.processTransactionData(this.state.transactionData)});
+  }
+
+  setModalVisible(visible) {
+    this.setState({modalVisible: visible});
   }
 
   processTransactionData(transaction_data) {
-    console.log(transaction_data)
     // The total costs based on categories
     var category_totals = {};
 
@@ -209,6 +245,8 @@ export default class Statisticsscreen extends React.Component {
         }
         
     }
+
+    
     
     // Get a list of the category totals
     // [0] -> Name of category
@@ -282,17 +320,22 @@ export default class Statisticsscreen extends React.Component {
 
   // Opens a separate window where individual transactions are listed based on a category
   showCategoryDetails(category_name) {
-    console.log("Details for " + category_name)
-
+    console.log(category_name)
 
     var transactions = []
 
     // Go through all of the transactions
     for(var i = 0; i < this.state.transactionData.length; i++) {
-      // If the transaction's category matches, add it to the list of transactions
 
+      // If the transaction's category matches, add it to the list of transactions
       if(this.state.transactionData[i].category[0] == category_name) {
         transactions.push(this.state.transactionData[i]);
+      } else if (category_name == "Other") {
+        // Other is a special case because that isn't in the transaction data.
+        // Instead, look at otherCategories to see what categories are considered "Other" and add those to the list of transactions
+        if (this.state.otherCategories.has(this.state.transactionData[i].category[0])) {
+          transactions.push(this.state.transactionData[i]);
+        }
       }
     }
 
@@ -301,8 +344,7 @@ export default class Statisticsscreen extends React.Component {
     }
 
 
-    this.setState({modalData: transactions})
-    this.setState({modalVisible: !this.state.modalVisible})
+    this.setState({modalData: transactions, modalVisible: true})
 
   }
 
@@ -310,81 +352,65 @@ export default class Statisticsscreen extends React.Component {
 
   render() {
 
-
     if (this.state.transactionStats != null) {
       
-      var stats = this.state.transactionStats;
       return (
 
         <View style={{flex:1}}>
 
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={this.state.modalVisible}
-          onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-            this.setState({modalVisible: !this.state.modalVisible});
-          }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-            <FlatList style={styles.flatList} data={this.state.modalData} renderItem={({item}) => <CategoryItem vendor_name={item.vendor_name} amount={item.amount}/>} keyExtractor={(item, index) => index.toString()}/>
-              <Pressable
-                style={[styles.button]}
-                onPress={() => this.setState({modalVisible: !this.state.modalVisible})}
-              >
-                <Text style={styles.textStyle}>Close Window</Text>
-              </Pressable>
-            </View>
-          </View>
-        </Modal>
+          <DetailModal visible = {this.state.modalVisible} modalData = {this.state.modalData} closeModalCallback = {this.setModalVisible}></DetailModal>
 
-        <ScrollView 
-        style={styles.flatList}>
-          <StatusBar hidden/>
-          <View style={{
-            flexDirection: 'column', 
-            justifyContent: 'space-evenly', 
-            flexWrap: 'wrap', 
-            alignItems: 'center',
-            paddingBottom: 40}}>
-    
-            {stats.map((p, i) => {
-              return (
-                <Pressable style={{
-                  width:"100%",
-                  paddingHorizontal:20,
-                  marginVertical: 15,
+          <ScrollView style={styles.flatList}>
+            
+
+            <View style={{
+              flexDirection: 'column', 
+              justifyContent: 'space-evenly', 
+              flexWrap: 'wrap', 
+              alignItems: 'center',
+              paddingBottom: 40}}>
+      
+              {this.state.transactionStats.map((p, i) => {
+                return (
+                  <Pressable style={{
+                    width:"100%",
+                    margin:2,
+                    paddingHorizontal:20,
+                    marginVertical: 15,
                   }} key={i} onPress={() => this.showCategoryDetails(p.name) }>
-                    <View style={{
-                      flexDirection: "row", 
-                      alignItems:"center"
-                    }}>
-                  
-                  <Donut 
-                  percentage={p.percentage} 
-                  color={p.color} 
-                  radius={ 75 }
-                  delay={200 * i} 
-                  max={p.max}/>
 
-                  <Text style={{textAlign:"center", fontSize:20, marginLeft:"10%"}}>{p.name}</Text>
-                  <Icon style={{
-                    position:"absolute",
-                    right: 10,
-                    }} name={"angle-right"} color={'lightgrey'} size={40}/>
-                </View>
-                </Pressable>
-              )
-            })
-            }
-          </View>
-        </ScrollView>
+                      <View style={{
+                        flexDirection: "row", 
+                        alignItems:"center"
+                      }}>
+                      
+                        <Donut 
+                          percentage={p.percentage} 
+                          color={p.color} 
+                          radius={ 75 }
+                          delay={200 * i} 
+                          max={p.max}
+                        />
+
+                        <Text style = {{textAlign:"center", fontSize:20, marginLeft:"10%"}}>{p.name}</Text>
+
+                        <Icon style = {{
+                          position:"absolute",
+                          right: 10,
+                          }} name={"angle-right"} color={'lightgrey'} size={40}
+                          
+                        />
+                      </View>
+                  </Pressable>
+                )
+              })
+              }
+            </View>
+          </ScrollView>
         </View>
       );
     } else {
-      return <Text>Loading...</Text>
+      return (<ActivityIndicator size="large" color="#6ebf4a"/>)
     }    
     
   }
