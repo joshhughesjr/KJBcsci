@@ -2,12 +2,11 @@
 import React, {useState} from 'react';
 import { Text, StatusBar, ActivityIndicator, Modal, View, StyleSheet, ScrollView, Pressable, FlatList } from 'react-native';
 import Constants from 'expo-constants';
+
 import Donut from '../Donut'
-
 import { getTransactionData } from '../plaid_components/RequestUtil';
-import TransactionItem from '../plaid_components/TransactionItem'
-
 import Icon from 'react-native-vector-icons/FontAwesome';
+
 
 const styles = StyleSheet.create({
   flatList: {
@@ -148,7 +147,6 @@ const data = [{
 const CategoryItem = (props) => {
   return (
           <View style={[styles.itemContainer, {flexDirection: 'column', }]}>
-            
             <Text style={styles.amount}>{ "$  " + props.amount * -1}</Text>
             <Text style={styles.item}>{props.vendor_name}</Text>
             <Text style={styles.item}>{props.category[0]}</Text>
@@ -170,7 +168,7 @@ const DetailModal = (props) => {
       >
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
-          
+          <Text style={styles.item}>Category Details</Text>
           <FlatList style={styles.flatList} data={props.modalData} renderItem={({item}) => <CategoryItem vendor_name={item.vendor_name} amount={item.amount} category={item.category}/>} keyExtractor={(item, index) => index.toString()}/>
           <Pressable
             style={[styles.button]}
@@ -253,7 +251,7 @@ export default class Statisticsscreen extends React.Component {
     // [1] -> Category total
     var category_totals_list = Object.entries(category_totals);
 
-    // Sort the category totals in descending order based on percentage
+    // Sort the category totals in descending order based total transaction amount
     category_totals_list.sort((a,b) => {
       if( a[1] > b[1]) {
         return -1;
@@ -268,7 +266,7 @@ export default class Statisticsscreen extends React.Component {
 
     var cutoff = 3;
     // If there are more than n categories, then everything other than the top n will be grouped into the "Other" category
-    // If there is n + 1 items, then just show the categories because other would be one category anyways.
+    // If there are n + 1 items, then just show the categories because other would be n categories anyways.
     if (category_totals_list.length > cutoff + 1) {
 
       // Set of categories that are grouped into "Other"
