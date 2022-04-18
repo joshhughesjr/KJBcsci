@@ -266,7 +266,7 @@ export default class Statisticsscreen extends React.Component {
 
     var cutoff = 3;
     // If there are more than n categories, then everything other than the top n will be grouped into the "Other" category
-    // If there are n + 1 items, then just show the categories because other would be n categories anyways.
+    // If there are n + 1 items, then just show the categories because other would be n + 1 categories anyways.
     if (category_totals_list.length > cutoff + 1) {
 
       // Set of categories that are grouped into "Other"
@@ -318,7 +318,6 @@ export default class Statisticsscreen extends React.Component {
 
   // Opens a separate window where individual transactions are listed based on a category
   showCategoryDetails(category_name) {
-    console.log(category_name)
 
     var transactions = []
 
@@ -336,11 +335,6 @@ export default class Statisticsscreen extends React.Component {
         }
       }
     }
-
-    for(var i = 0; i < transactions.length; i++) {
-      console.log(transactions[i]);
-    }
-
 
     this.setState({modalData: transactions, modalVisible: true})
 
