@@ -1,13 +1,27 @@
-import React, {useState} from 'react';
+import React from 'react';
 
-import {Text} from 'react-native';
+import {Text, StyleSheet, TouchableOpacity} from 'react-native';
 
-import { PlaidLink, LinkSuccess, LinkExit } from 'react-native-plaid-link-sdk';
+import {openLink} from 'react-native-plaid-link-sdk';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// https://birdboombox.com/
 const urlBase = "https://birdboombox.com/";
+
+const styles = StyleSheet.create({
+    buttonContainer: {
+        marginTop:10,
+        height:45,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom:20,
+        width:250,
+        borderRadius:30,
+        backgroundColor: "#6ebf4a",
+      }
+})
+
 
 // This component handles the PlaidLink component from react-native-plaid-link-sdk
 // The PlaidLink Component requires a link token in order to work properly
@@ -40,6 +54,12 @@ export default class PlaidLinkHandler extends React.Component {
         
     }
 
+    componentWillUnmount() {
+        if (this._listener) {
+            this._listener.remove();
+        }
+    }
+
     async getAccessToken(public_token) {
         console.log("Public token: " + public_token);
         console.log("fetching access token");
@@ -58,128 +78,65 @@ export default class PlaidLinkHandler extends React.Component {
         return token;
     }
 
-    async testGetBalance(accessToken) {
-        const response = await fetch(urlBase + "api/getBalance", {
-            method: "POST",
-            body: JSON.stringify({ access_token: accessToken }),
-            headers: {
-                "Content-Type": "application/json",
+    openPlaidLink() {
+        var plaidProps = {
+            tokenConfig:{token: this.state.linkToken},
+            onSuccess: async (success) => {
+                
+                
+                // The link_token has been exchanged for a public_token
+                // Exchange the public_token for an access_token
+                const publicToken = success.publicToken;
+
+                    
+                // Get the access token
+                const accessToken = await this.getAccessToken(publicToken);
+                console.log(accessToken);
+            
+                // Save the access_token to storage
+                try {
+                    await AsyncStorage.setItem('@access_token', accessToken)
+                } catch (e) {
+                    console.log("Save Error")
+                }
+                
+                // Test Retrieving Token
+                try {
+                    const value = await AsyncStorage.getItem('@access_token')
+                    if(value !== null) {
+                        console.log("Retrieved Token: " + value)
+                    }
+                } catch(e) {
+                    console.log("Access Token Not Found")
+                }
+
+               
             },
-        });
-
-        const data = await response.json();
+            onExit: () => console.log("exit")
+        }
         
-        console.log(data)
-    }
-
-    async testGetTransactions(accessToken) {
-        console.log("awaiting transaction data...")
-        const response = await fetch(urlBase + "api/getTransactions", {
-            method: "POST",
-            body: JSON.stringify({ 
-                access_token: accessToken,
-                start_date : '2022-03-01',
-                end_date: '2022-03-16'
-            }),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-
-        const data = await response.json();
-        
-        console.log(data)
+        openLink(plaidProps)
     }
 
     render() {
         if (this.state.linkToken == '') {
-            // No link token yet, display loading screen
+            // No link token yet, display loading button
             
-            return <Text>Loading...</Text>
-        } else {
-            // Use the link token in the PlaidLink Component
             return (
-                <PlaidLink
-                    tokenConfig={{
-                        token: this.state.linkToken,
-                    }}
-                    onSuccess={(success) => {
-                    // The link_token has been exchanged for a public_token
-                    // Exchange the public_token for an access_token
-                    const publicToken = success.publicToken;
-                    
-
-                    (async () => {
-
-                        
-                        // Get the access token
-                        const accessToken = await this.getAccessToken(publicToken);
-                        console.log(accessToken);
-                        
-                        // Save the access_token to storage
-                        try {
-                            await AsyncStorage.setItem('@access_token', accessToken)
-                        } catch (e) {
-                            console.log("Save Error")
-                        }
-                        
-                        // Test Retrieving Token
-                        try {
-                            const value = await AsyncStorage.getItem('@access_token')
-                            if(value !== null) {
-                                console.log("Retrieved Token: " + value)
-                            }
-                        } catch(e) {
-                            console.log("Access Token Not Found")
-                        }
-                        
-                        // Use the new access token to get a list of the accounts
-                        
-                        const response = await fetch("https://birdboombox.com/api/getBalance", {
-                            method: "POST",
-                            body: JSON.stringify({ access_token: accessToken }),
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                        });
-
-                        const data = await response.json();
-                        const formatted = data.Balance.accounts.map(acct => ({id: acct.account_id, name: acct.name, type: acct.type}));
-
-                        var store = {}
-                        for( var i = 0; i < formatted.length; i++) {
-                            store[formatted[i].id] = formatted[i].name;
-                        }
-                        console.log(store);
-                        
-                        // Save the accounts to local storage
-                        try {
-                            await AsyncStorage.setItem('@accounts', JSON.stringify(store))
-                        } catch (e) {
-                            console.log("Save Error")
-                        }
-
-                        /*
-                        try {
-                            const value = await AsyncStorage.getItem('@accounts')
-                            if(value !== null) {
-                                console.log("Retrieved Accounts: " + JSON.parse(value))
-                            }
-                        } catch(e) {
-                            console.log("Accounts Not Found")
-                        }
-                        */
-
-                    })();
-
-                    }}
-                    onExit={(exit) => {
-                        console.log(exit);
-                    }}
+                <TouchableOpacity style={styles.buttonContainer}
+                    onPress={() => {}}
                 >
-                
-                <Text>Add Account</Text>
-                </PlaidLink>
+                    <Text>Loading...</Text> 
+                </TouchableOpacity>
+            )
+        } else {
+            // Retrieved Link token, link process can be performed
+            return (
+                <TouchableOpacity style={styles.buttonContainer}
+                    onPress={() => {this.openPlaidLink()}}
+                >
+                    <Text>Add Account</Text> 
+                </TouchableOpacity>
             )
 
         }
