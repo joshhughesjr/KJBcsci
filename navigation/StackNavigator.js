@@ -2,7 +2,7 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import Home from "../screens/Homescreen";
-import GoalsScreen from "../screens/Goalsscreen";
+import {GoalsScreen} from "../screens/Goalsscreen";
 import StatisticsScreen from "../screens/Statisticsscreen";
 import CalenderScreen from "../screens/Calenderscreen";
 import AccountScreen from "../screens/Accountscreen";

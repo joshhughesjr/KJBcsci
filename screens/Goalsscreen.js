@@ -21,39 +21,50 @@ const styles = StyleSheet.create({
   },
 });
 
-var goals = [
-  {
-    goal_date: new Date(),
-    save_goal: 2000,
-    amount_saved: 200
+export class GoalsScreen extends React.Component {
+
+  constructor(props) {
+    super(props)
+
+    this.state =(
+    {
+        goals:
+        [{
+          goal_date: new Date(),
+          save_goal: 2000,
+          amount_saved: 200
+        }]
+    }
+    )
   }
-]
 
-function GoalsScreen() {
-  return (
+  GoalScreen() {
+    return (
+        <View style={styles.center}>
+        <TouchableOpacity style={styles.buttonContainer}><Text>Add Goal</Text></TouchableOpacity>
+        </View>
+    );
+  }
+
+  PlanScreen() {
+    return (
       <View style={styles.center}>
-      <TouchableOpacity style={styles.buttonContainer}><Text>Add Goal</Text></TouchableOpacity>
+        <Text>Plans will be here</Text>
       </View>
-  );
-}
+    );
+  }
 
-function PlansScreen() {
-  return (
-    <View style={styles.center}>
-      <Text>Plans will be here</Text>
-    </View>
-  );
-}
+  render() {
 
-const Tab = createMaterialTopTabNavigator();
+    const Tab = createMaterialTopTabNavigator();
 
-export default function App() {
-  return (
+    return (
    
       <Tab.Navigator>
-        <Tab.Screen name="Goals" component={GoalsScreen} />
-        <Tab.Screen name="Plans" component={PlansScreen} />
+        <Tab.Screen name="Goals" component={this.GoalScreen} />
+        <Tab.Screen name="Plans" component={this.PlanScreen} />
       </Tab.Navigator>
 
-  );
+    );
+  }
 }
