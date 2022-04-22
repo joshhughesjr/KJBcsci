@@ -21,37 +21,46 @@ const styles = StyleSheet.create({
   },
 });
 
-export class GoalsScreen extends React.Component {
+// Takes a goal and computes the amount required to save per day to meet that goal by the goal_date
+function computeSaveRate(goal) {
+  var days_left = goal.goal_date - new Date();
+
+  return days_left;
+}
+
+function GoalScreen(props) {
+  console.log(computeSaveRate(props.goals[0]))
+  
+    return (
+      <View style={styles.center}>
+      <TouchableOpacity style={styles.buttonContainer}><Text>Add Goal</Text></TouchableOpacity>
+      </View>
+  );
+  
+}
+
+function PlanScreen(props) {
+  return (
+    <View style={styles.center}>
+      <Text>Plans will be here</Text>
+    </View>
+  );
+}
+
+export default class Goalsscreen extends React.Component {
 
   constructor(props) {
     super(props)
 
-    this.state =(
+    this.state =
     {
-        goals:
-        [{
-          goal_date: new Date(),
+        goals:[{
+          goal_date: new Date("2022-04-30"),
           save_goal: 2000,
           amount_saved: 200
         }]
     }
-    )
-  }
 
-  GoalScreen() {
-    return (
-        <View style={styles.center}>
-        <TouchableOpacity style={styles.buttonContainer}><Text>Add Goal</Text></TouchableOpacity>
-        </View>
-    );
-  }
-
-  PlanScreen() {
-    return (
-      <View style={styles.center}>
-        <Text>Plans will be here</Text>
-      </View>
-    );
   }
 
   render() {
@@ -59,11 +68,13 @@ export class GoalsScreen extends React.Component {
     const Tab = createMaterialTopTabNavigator();
 
     return (
-   
-      <Tab.Navigator>
-        <Tab.Screen name="Goals" component={this.GoalScreen} />
-        <Tab.Screen name="Plans" component={this.PlanScreen} />
-      </Tab.Navigator>
+      <>
+          <Tab.Navigator>
+            <Tab.Screen name="Goals">{() => {return <GoalScreen goals = {this.state.goals}></GoalScreen>} }</Tab.Screen>
+            <Tab.Screen name="Plans" component={PlanScreen} />
+          </Tab.Navigator>
+      </>
+     
 
     );
   }
