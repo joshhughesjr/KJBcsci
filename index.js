@@ -1,4 +1,16 @@
+import { Platform } from 'react-native';
+
+if (Platform.OS === 'android') {
+  // https://github.com/facebook/react-native/issues/19410
+
+  require('intl');
+  require('intl/locale-data/jsonp/en-US');
+}
+
 import { registerRootComponent } from 'expo';
+
+
+
 
 import App from './App';
 
