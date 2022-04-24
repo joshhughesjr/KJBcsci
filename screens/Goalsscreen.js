@@ -1,24 +1,51 @@
 import React from "react";
-import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, View, TouchableOpacity, StyleSheet, FlatList} from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import Constants from 'expo-constants';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const styles = StyleSheet.create({
   center: {
-    flex:1,
+    flex: 1,
     justifyContent:"center",
     alignItems:"center"
   },
   buttonContainer: {
-    marginTop:10,
+    marginTop:30,
     height:45,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom:20,
     width:250,
     borderRadius:30,
     backgroundColor: "#6ebf4a",
   },
+  flatList: {
+    paddingTop: Constants.statusBarHeight,
+    width: "90%",
+    backgroundColor: 'rgba(255, 255, 255, 0)',
+    padding: 15,
+  },
+  listItemContainer: {
+    flexDirection: 'row',
+    justifyContent:"center",
+    alignItems:"center",
+    backgroundColor: '#DDDDDD',
+    paddingLeft: 10,
+    borderRadius: 15,
+    paddingRight: 10,
+    marginTop: 5,
+    marginBottom: 10,
+    shadowColor: "#000",
+
+    shadowRadius: 30,
+    elevation: 2
+    
+
+  },
+  editButton: {
+    flex: 1,
+  }
 });
 
 // Takes a goal and computes the amount required to save per day to meet that goal by the goal_date
@@ -28,19 +55,25 @@ function computeSaveRate(goal) {
   var save_rate = (goal.save_goal - goal.amount_saved) / days_left;
   save_rate = new Intl.NumberFormat('en-US', {style: 'currency',currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 2}).format(save_rate)
   return save_rate;
-  ;
+
 }
 
 function ListItem(props) {
-  return(<Text></Text>)
+  return(
+    <View style={styles.listItemContainer}>
+      <Text style={{flex:9, textAlign: 'center'}}>{props.goal.name}</Text>
+      <TouchableOpacity style={styles.editButton}><Icon name={"gear"} color={'#6ebf4a'} size={35} /></TouchableOpacity>
+    </View>
+  )
 }
 
 function GoalScreen(props) {
-  console.log(computeSaveRate(props.goals[0])); 
+  //console.log(computeSaveRate(props.goals[0])); 
 
     return (
       <View style={styles.center}>
-      <TouchableOpacity style={styles.buttonContainer}><Text>Add Goal</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.buttonContainer}><Text>Add Goal</Text></TouchableOpacity>
+        <FlatList style={styles.flatList} data={props.goals} keyExtractor={(item, index) => index.toString()} renderItem={({item}) => <ListItem goal = {item}/>}/>
       </View>
   );
   
