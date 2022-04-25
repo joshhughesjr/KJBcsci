@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
   },
   flatList: {
     paddingTop: Constants.statusBarHeight,
+    marginTop: 15,
     width: "90%",
     backgroundColor: 'rgba(255, 255, 255, 0)',
     padding: 15,
@@ -48,12 +49,28 @@ const styles = StyleSheet.create({
   }
 });
 
+function formatCurrency(amount) {
+
+  return new Intl.NumberFormat('en-US', {style: 'currency',currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 2}).format(amount)
+
+}
+
+function formatDate(date) {
+
+  if (typeof date == "string") {
+    return new Intl.DateTimeFormat('en-US').format(new Date(date))
+  } else {
+    return new Intl.DateTimeFormat('en-US').format(date)
+  }
+
+}
+
 // Takes a goal and computes the amount required to save per day to meet that goal by the goal_date
 function computeSaveRate(goal) {
 
   var days_left = parseInt( (new Date(goal.goal_date) - new Date()) / (1000 * 60 * 60 * 24) ) + 1; // Convert milliseconds -> seconds -> minutes -> hours -> days
   var save_rate = (goal.save_goal - goal.amount_saved) / days_left;
-  save_rate = new Intl.NumberFormat('en-US', {style: 'currency',currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 2}).format(save_rate)
+  save_rate = formatCurrency(save_rate)
   return save_rate;
 
 }
@@ -61,7 +78,12 @@ function computeSaveRate(goal) {
 function ListItem(props) {
   return(
     <View style={styles.listItemContainer}>
-      <Text style={{flex:9, textAlign: 'center'}}>{props.goal.name}</Text>
+      <View style= {{flex:9, padding: 5}}>
+        <Text style={{textAlign: 'center', fontSize: 20}}>{props.goal.name}</Text>
+        <Text style={{textAlign: 'center', fontSize: 18}}>Save {formatCurrency(props.goal.save_goal)} by {formatDate(props.goal.goal_date)}</Text>
+        <Text style={{textAlign: 'center', fontSize: 18}}>Saved: {formatCurrency(props.goal.amount_saved)}</Text>
+      </View>
+      
       <TouchableOpacity style={styles.editButton}><Icon name={"gear"} color={'#6ebf4a'} size={35} /></TouchableOpacity>
     </View>
   )
@@ -95,52 +117,52 @@ export default class Goalsscreen extends React.Component {
     this.state =
     {
         goals:[{
-          "name": "Mawlamyine",
+          "name": "Disney Trip",
           "goal_date": "2022-08-27",
           "save_goal": 369,
           "amount_saved": 67
         }, {
-          "name": "Shlissel’burg",
+          "name": "Vacation to Shlissel’burg",
           "goal_date": "2022-10-24",
           "save_goal": 157,
           "amount_saved": 10
         }, {
-          "name": "San Diego",
+          "name": "Vacation to Diego",
           "goal_date": "2022-05-09",
           "save_goal": 174,
           "amount_saved": 63
         }, {
-          "name": "Markova",
+          "name": "Vacation to Markova",
           "goal_date": "2022-07-30",
           "save_goal": 320,
           "amount_saved": 62
         }, {
-          "name": "Mondragon",
+          "name": "Vacation to Mondragon",
           "goal_date": "2022-08-27",
           "save_goal": 427,
           "amount_saved": 66
         }, {
-          "name": "Crasto",
+          "name": "Vacation to Crasto",
           "goal_date": "2022-06-22",
           "save_goal": 457,
           "amount_saved": 29
         }, {
-          "name": "Al Jaghbūb",
+          "name": "Vacation to Al Jaghbūb",
           "goal_date": "2022-06-16",
           "save_goal": 431,
           "amount_saved": 76
         }, {
-          "name": "Qal‘at al Andalus",
+          "name": "Vacation to Qal‘at al Andalus",
           "goal_date": "2022-07-19",
           "save_goal": 393,
           "amount_saved": 89
         }, {
-          "name": "Pavlovskaya",
+          "name": "Vacation to Pavlovskaya",
           "goal_date": "2022-09-01",
           "save_goal": 410,
           "amount_saved": 6
         }, {
-          "name": "Jardinópolis",
+          "name": "Vacation to Jardinópolis",
           "goal_date": "2022-09-06",
           "save_goal": 330,
           "amount_saved": 13
