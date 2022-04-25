@@ -102,12 +102,12 @@ function ListItem(props) {
   return(
     <View style={styles.listItemContainer}>
       <View style= {{flex:9, padding: 5}}>
-        <Text style={{textAlign: 'center', fontSize: 20}}>{props.goal.name}</Text>
-        <Text style={{textAlign: 'center', fontSize: 18}}>Save {formatCurrency(props.goal.save_goal)} by {formatDate(props.goal.goal_date)}</Text>
-        <Text style={{textAlign: 'center', fontSize: 18}}>Saved: {formatCurrency(props.goal.amount_saved)}</Text>
+        <Text style={{textAlign: 'center', fontSize: 20}}>{props.screen_state.goals[props.index].name}</Text>
+        <Text style={{textAlign: 'center', fontSize: 18}}>Save {formatCurrency(props.screen_state.goals[props.index].save_goal)} by {formatDate(props.goal.goal_date)}</Text>
+        <Text style={{textAlign: 'center', fontSize: 18}}>Saved: {formatCurrency(props.screen_state.goals[props.index].amount_saved)}</Text>
       </View>
       
-      <TouchableOpacity onPress ={() => props.buttonCallback(props.index)} style={styles.editButton}><Icon name={"gear"} color={'#6ebf4a'} size={35} /></TouchableOpacity>
+      <TouchableOpacity onPress ={() => props.screen_state.callback_functions.button_callback(props.index)} style={styles.editButton}><Icon name={"gear"} color={'#6ebf4a'} size={35} /></TouchableOpacity>
     </View>
   )
 }
@@ -119,15 +119,15 @@ function DetailModal(props) {
       <Modal
         animationType="slide"
         transparent={true}
-        visible={props.modal_visible}
+        visible={props.screen_state.modal_visible}
         onRequestClose={() => {
           //props.closeModalCallback(!props.visible)
         }}
       >
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
-          <Text>{JSON.stringify(props.modal_data)}</Text>
-          <TouchableOpacity onPress={ () => {props.modal_callback()}} style={styles.buttonContainer}><Text>Submit</Text></TouchableOpacity>
+          <Text>{JSON.stringify(props.screen_state.modal_data)}</Text>
+          <TouchableOpacity onPress={ () => {props.screen_state.callback_functions.modal_callback()}} style={styles.buttonContainer}><Text>Submit</Text></TouchableOpacity>
 
         </View>  
       </View>
@@ -143,13 +143,13 @@ function GoalScreen(props) {
       
       <View style={styles.center}>
 
-        <DetailModal style={styles.modalView} modal_visible={props.modal_visible} modal_callback={props.modal_callback} modal_data={props.modal_data}></DetailModal>
-        <TouchableOpacity onPress={() => props.buttonCallback(-1)} style={styles.buttonContainer}><Text>Add Goal</Text></TouchableOpacity>
+        <DetailModal style={styles.modalView} screen_state={props.screen_state}></DetailModal>
+        <TouchableOpacity onPress={() => props.screen_state.callback_functions.button_callback(-1)} style={styles.buttonContainer}><Text>Add Goal</Text></TouchableOpacity>
         <FlatList 
             style={styles.flatList} 
             data={props.goals} 
             keyExtractor={(item, index) => index.toString()} 
-            renderItem={({item, index}) => <ListItem goal={item} index = {index} buttonCallback = {props.buttonCallback}/>}
+            renderItem={({item, index}) => <ListItem goal={item} index = {index} screen_state={props.screen_state}/>}
             
         />
       </View>
@@ -159,23 +159,22 @@ function GoalScreen(props) {
 
 
 
-function PlanScreen(props) {
-  return (
-    <View style={styles.center}>
-      <Text>Plans will be here</Text>
-    </View>
-  );
-}
-
 export default class Goalsscreen extends React.Component {
 
   constructor(props) {
     super(props)
 
+    this.buttonCallback = this.buttonCallback.bind(this);
+    this.modalCallback = this.modalCallback.bind(this);
+
     this.state =
     {
         modal_visible: false,
         modal_data: null,
+        callback_functions: {
+          button_callback: this.buttonCallback,
+          modal_callback: this.modalCallback
+        },
         goals:[{
           "name": "Disney Trip",
           "goal_date": "2022-08-27",
@@ -229,10 +228,16 @@ export default class Goalsscreen extends React.Component {
         }]
     }
 
-    this.buttonCallback = this.buttonCallback.bind(this);
-    this.modalCallback = this.modalCallback.bind(this);
   }
   
+  PlanScreen(props) {
+    return (
+      <View style={styles.center}>
+        <Text>Plans will be here</Text>
+      </View>
+    );
+  }
+
   // Callback for either the Add Goal button or the gear icon buttons for editing existing goals
   // This callback is passed from the Goalsscreen class -> GoalScreen function Component -> ListItem function components
   buttonCallback(index = -1) {
@@ -280,8 +285,8 @@ export default class Goalsscreen extends React.Component {
     return (
       <>
           <Tab.Navigator>
-            <Tab.Screen name="Goals">{() => {return <GoalScreen goals = {this.state.goals} modal_visible={this.state.modal_visible} modal_callback={this.modalCallback} modal_data={this.state.modal_data} buttonCallback = {this.buttonCallback} ></GoalScreen>} }</Tab.Screen>
-            <Tab.Screen name="Plans" component={PlanScreen} />
+            <Tab.Screen name="Goals">{() => {return <GoalScreen goals = {this.state.goals} screen_state={this.state}></GoalScreen>} }</Tab.Screen>
+            <Tab.Screen name="Plans" component={this.PlanScreen} />
           </Tab.Navigator>
       </>
      
