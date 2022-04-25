@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   },
   flatList: {
     paddingTop: Constants.statusBarHeight,
-    marginTop: 15,
+    marginTop: 10,
     width: "90%",
     backgroundColor: 'rgba(255, 255, 255, 0)',
     padding: 15,
@@ -84,22 +84,29 @@ function ListItem(props) {
         <Text style={{textAlign: 'center', fontSize: 18}}>Saved: {formatCurrency(props.goal.amount_saved)}</Text>
       </View>
       
-      <TouchableOpacity style={styles.editButton}><Icon name={"gear"} color={'#6ebf4a'} size={35} /></TouchableOpacity>
+      <TouchableOpacity onPress ={() => props.buttonCallback(props.index)}style={styles.editButton}><Icon name={"gear"} color={'#6ebf4a'} size={35} /></TouchableOpacity>
     </View>
   )
 }
 
 function GoalScreen(props) {
-  //console.log(computeSaveRate(props.goals[0])); 
 
     return (
       <View style={styles.center}>
-        <TouchableOpacity style={styles.buttonContainer}><Text>Add Goal</Text></TouchableOpacity>
-        <FlatList style={styles.flatList} data={props.goals} keyExtractor={(item, index) => index.toString()} renderItem={({item}) => <ListItem goal = {item}/>}/>
+        <TouchableOpacity onPress={() => props.buttonCallback(-1)} style={styles.buttonContainer}><Text>Add Goal</Text></TouchableOpacity>
+        <FlatList 
+            style={styles.flatList} 
+            data={props.goals} 
+            keyExtractor={(item, index) => index.toString()} 
+            renderItem={({item, index}) => <ListItem goal={item} index = {index} buttonCallback = {props.buttonCallback}/>}
+            
+        />
       </View>
   );
   
 }
+
+
 
 function PlanScreen(props) {
   return (
@@ -169,16 +176,44 @@ export default class Goalsscreen extends React.Component {
         }]
     }
 
+    this.buttonCallback = this.buttonCallback.bind(this);
+
+  }
+  
+  // Callback for either the Add Goal button or the gear icon buttons for editing existing goals
+  // This callback is passed from the Goalsscreen class -> GoalScreen function Component -> ListItem function components
+  buttonCallback(index = -1) {
+    console.log(index)
+    
+    // State is immutable, so editing means replacing it with a whole other array
+    var modified = this.state.goals;
+
+    if(index == -1) {
+      // No index specified, create new goal
+    } else {
+      // Index specified, modify that index's value in goals
+        
+
+        // Test modification for now
+        modified[index] = {
+        "name": "Disney Trip",
+        "goal_date": "2022-08-27",
+        "save_goal": 420,
+        "amount_saved": 69
+      }
+    }
+    
+    this.setState({goals: modified})
   }
 
   render() {
 
     const Tab = createMaterialTopTabNavigator();
-
+    
     return (
       <>
           <Tab.Navigator>
-            <Tab.Screen name="Goals">{() => {return <GoalScreen goals = {this.state.goals}></GoalScreen>} }</Tab.Screen>
+            <Tab.Screen name="Goals">{() => {return <GoalScreen goals = {this.state.goals} buttonCallback = {this.buttonCallback} ></GoalScreen>} }</Tab.Screen>
             <Tab.Screen name="Plans" component={PlanScreen} />
           </Tab.Navigator>
       </>
