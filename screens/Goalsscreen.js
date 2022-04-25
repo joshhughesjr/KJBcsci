@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View, TouchableOpacity, StyleSheet, FlatList} from 'react-native';
+import { Text, View, TouchableOpacity, StyleSheet, FlatList, Modal, Alert} from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Constants from 'expo-constants';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -46,6 +46,29 @@ const styles = StyleSheet.create({
   },
   editButton: {
     flex: 1,
+  }, 
+  modalView: {
+    margin: 20,
+    width:"90%",
+    height:"75%",
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
   }
 });
 
@@ -84,15 +107,43 @@ function ListItem(props) {
         <Text style={{textAlign: 'center', fontSize: 18}}>Saved: {formatCurrency(props.goal.amount_saved)}</Text>
       </View>
       
-      <TouchableOpacity onPress ={() => props.buttonCallback(props.index)}style={styles.editButton}><Icon name={"gear"} color={'#6ebf4a'} size={35} /></TouchableOpacity>
+      <TouchableOpacity onPress ={() => props.buttonCallback(props.index)} style={styles.editButton}><Icon name={"gear"} color={'#6ebf4a'} size={35} /></TouchableOpacity>
     </View>
+  )
+}
+
+function DetailModal(props) {
+  return (
+
+    
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={props.modal_visible}
+        onRequestClose={() => {
+          //props.closeModalCallback(!props.visible)
+        }}
+      >
+      <View style={styles.centeredView}>
+        <View style={styles.modalView}>
+          <Text>{JSON.stringify(props.modal_data)}</Text>
+          <TouchableOpacity onPress={ () => {props.modal_callback()}} style={styles.buttonContainer}><Text>Submit</Text></TouchableOpacity>
+
+        </View>  
+      </View>
+      </Modal>
+    
   )
 }
 
 function GoalScreen(props) {
 
     return (
+
+      
       <View style={styles.center}>
+
+        <DetailModal style={styles.modalView} modal_visible={props.modal_visible} modal_callback={props.modal_callback} modal_data={props.modal_data}></DetailModal>
         <TouchableOpacity onPress={() => props.buttonCallback(-1)} style={styles.buttonContainer}><Text>Add Goal</Text></TouchableOpacity>
         <FlatList 
             style={styles.flatList} 
@@ -123,6 +174,8 @@ export default class Goalsscreen extends React.Component {
 
     this.state =
     {
+        modal_visible: false,
+        modal_data: null,
         goals:[{
           "name": "Disney Trip",
           "goal_date": "2022-08-27",
@@ -177,7 +230,7 @@ export default class Goalsscreen extends React.Component {
     }
 
     this.buttonCallback = this.buttonCallback.bind(this);
-
+    this.modalCallback = this.modalCallback.bind(this);
   }
   
   // Callback for either the Add Goal button or the gear icon buttons for editing existing goals
@@ -187,23 +240,37 @@ export default class Goalsscreen extends React.Component {
     
     // State is immutable, so editing means replacing it with a whole other array
     var modified = this.state.goals;
+    this.setState({modal_visible: true});
 
     if(index == -1) {
+
+      this.setState({modal_data: null})
+
       // No index specified, create new goal
+    
     } else {
       // Index specified, modify that index's value in goals
         
-
+        this.setState({modal_data: this.state.goals[index]})
         // Test modification for now
+        /*
         modified[index] = {
         "name": "Disney Trip",
         "goal_date": "2022-08-27",
         "save_goal": 420,
         "amount_saved": 69
       }
+      */
     }
     
     this.setState({goals: modified})
+  }
+
+  // Callback for the submit and cancel buttons in the modal
+  // If there is valid data passed to the function, then the function updates the goals data
+  // Else, it just closes the modal
+  modalCallback(index = -1, newData = {}) {
+    this.setState({modal_visible: false})
   }
 
   render() {
@@ -213,7 +280,7 @@ export default class Goalsscreen extends React.Component {
     return (
       <>
           <Tab.Navigator>
-            <Tab.Screen name="Goals">{() => {return <GoalScreen goals = {this.state.goals} buttonCallback = {this.buttonCallback} ></GoalScreen>} }</Tab.Screen>
+            <Tab.Screen name="Goals">{() => {return <GoalScreen goals = {this.state.goals} modal_visible={this.state.modal_visible} modal_callback={this.modalCallback} modal_data={this.state.modal_data} buttonCallback = {this.buttonCallback} ></GoalScreen>} }</Tab.Screen>
             <Tab.Screen name="Plans" component={PlanScreen} />
           </Tab.Navigator>
       </>
