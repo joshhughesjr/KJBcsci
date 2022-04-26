@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View, TouchableOpacity, StyleSheet, FlatList, Modal, Alert} from 'react-native';
+import { Text, View, TouchableOpacity, StyleSheet, FlatList, Modal, TextInput} from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Constants from 'expo-constants';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    width:250,
+    minWidth: 100,
     borderRadius:30,
     backgroundColor: "#6ebf4a",
   },
@@ -50,7 +50,6 @@ const styles = StyleSheet.create({
   modalView: {
     margin: 20,
     width:"90%",
-    height:"75%",
     backgroundColor: "white",
     borderRadius: 20,
     padding: 35,
@@ -69,6 +68,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 22
+  }, 
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+  },
+  input_container: {
+    flexDirection:"row",
+    alignItems:"center"
+  },
+  input_label: {
+    fontSize: 20
   }
 });
 
@@ -127,8 +139,27 @@ function DetailModal(props) {
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
           <Text>{JSON.stringify(props.screen_state.modal_data)}</Text>
-          <TouchableOpacity onPress={ () => {props.screen_state.callback_functions.modal_callback()}} style={styles.buttonContainer}><Text>Submit</Text></TouchableOpacity>
+          <View style={{flexDirection:"column"}}>
 
+            <View style={styles.input_container}>
+              <Text style={styles.input_label}>Name:</Text><TextInput style = {[styles.input, {flex:1}]}></TextInput>
+            </View>
+
+            <View style={styles.input_container}>
+              <Text style={styles.input_label}>Saving Goal: $</Text><TextInput style = {[styles.input, {flex:1}]}></TextInput>
+            </View>
+
+            <View style={styles.input_container}>
+              <Text style={styles.input_label}>Goal Date:</Text><TextInput style = {[styles.input, {flex:1}]}></TextInput>
+            </View>
+
+
+          <View style={styles.input_container}>
+          <TouchableOpacity onPress={ () => {props.screen_state.callback_functions.modal_callback()}} style={[styles.buttonContainer, {marginRight: 20}]}><Text>Cancel</Text></TouchableOpacity>
+          <TouchableOpacity onPress={ () => {props.screen_state.callback_functions.modal_callback()}} style={[styles.buttonContainer, {marginLeft: 20}]}><Text>Submit</Text></TouchableOpacity>
+          
+          </View>
+          </View>
         </View>  
       </View>
       </Modal>
