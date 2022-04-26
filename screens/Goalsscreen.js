@@ -3,6 +3,7 @@ import { Text, View, TouchableOpacity, StyleSheet, FlatList, Modal, TextInput} f
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Constants from 'expo-constants';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import DatePicker from 'react-native-date-picker'
 
 const styles = StyleSheet.create({
   center: {
@@ -138,25 +139,30 @@ function DetailModal(props) {
       >
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
-          <Text>{JSON.stringify(props.screen_state.modal_data)}</Text>
           <View style={{flexDirection:"column"}}>
 
             <View style={styles.input_container}>
-              <Text style={styles.input_label}>Name:</Text><TextInput style = {[styles.input, {flex:1}]}></TextInput>
+              <Text style={styles.input_label}>Name:</Text><TextInput value={props.screen_state.input_name} onChangeText={ (text) => props.screen_state.callback_functions.input_callback(text, "name")} style = {[styles.input, {flex:1}]}></TextInput>
             </View>
 
             <View style={styles.input_container}>
-              <Text style={styles.input_label}>Saving Goal: $</Text><TextInput style = {[styles.input, {flex:1}]}></TextInput>
+              <Text style={styles.input_label}>Saving Goal: $</Text><TextInput value={props.screen_state.input_save_goal} onChangeText={ (text) => props.screen_state.callback_functions.input_callback(text, "goal")} keyboardType="numeric" style = {[styles.input, {flex:1}]}></TextInput>
             </View>
 
             <View style={styles.input_container}>
-              <Text style={styles.input_label}>Goal Date:</Text><TextInput style = {[styles.input, {flex:1}]}></TextInput>
+              <Text style={styles.input_label}>Currently Saved: $</Text><TextInput value={props.screen_state.input_amount_saved} onChangeText={ (text) => props.screen_state.callback_functions.input_callback(text, "saved")} keyboardType="numeric" style = {[styles.input, {flex:1}]}></TextInput>
+            </View>
+
+            <Text style={[styles.input_label, {textAlign:"center"}]}>Goal Date:</Text>
+            <View style={styles.input_container}>
+              <DatePicker mode="date" date={props.screen_state.input_goal_date} onDateChange={ (date) => props.screen_state.callback_functions.input_callback(date, "date")}minimumDate={new Date()} style = {[styles.input, {flex:1}]}></DatePicker>
             </View>
 
 
           <View style={styles.input_container}>
-          <TouchableOpacity onPress={ () => {props.screen_state.callback_functions.modal_callback()}} style={[styles.buttonContainer, {marginRight: 20}]}><Text>Cancel</Text></TouchableOpacity>
-          <TouchableOpacity onPress={ () => {props.screen_state.callback_functions.modal_callback()}} style={[styles.buttonContainer, {marginLeft: 20}]}><Text>Submit</Text></TouchableOpacity>
+          <TouchableOpacity onPress={ () => {props.screen_state.callback_functions.modal_callback()}} style={[styles.buttonContainer, {marginRight: 10}]}><Text>Cancel</Text></TouchableOpacity>
+          <TouchableOpacity onPress={ () => {props.screen_state.callback_functions.modal_callback(props.screen_state.edit_index, true)}} style={[styles.buttonContainer, {marginRight: 10, marginLeft: 10}]}><Text>Delete</Text></TouchableOpacity>
+          <TouchableOpacity onPress={ () => {props.screen_state.callback_functions.modal_callback(props.screen_state.edit_index)}} style={[styles.buttonContainer, {marginLeft: 10}]}><Text>Submit</Text></TouchableOpacity>
           
           </View>
           </View>
@@ -188,8 +194,6 @@ function GoalScreen(props) {
   
 }
 
-
-
 export default class Goalsscreen extends React.Component {
 
   constructor(props) {
@@ -197,6 +201,7 @@ export default class Goalsscreen extends React.Component {
 
     this.buttonCallback = this.buttonCallback.bind(this);
     this.modalCallback = this.modalCallback.bind(this);
+    this.inputCallback = this.inputCallback.bind(this);
 
     this.state =
     {
@@ -204,8 +209,14 @@ export default class Goalsscreen extends React.Component {
         modal_data: null,
         callback_functions: {
           button_callback: this.buttonCallback,
-          modal_callback: this.modalCallback
+          modal_callback: this.modalCallback,
+          input_callback: this.inputCallback
         },
+        input_name: "",
+        input_save_goal:"",
+        input_amount_saved: "",
+        input_goal_date: new Date(),
+        edit_index: 0,
         goals:[{
           "name": "Disney Trip",
           "goal_date": "2022-08-27",
@@ -222,11 +233,14 @@ export default class Goalsscreen extends React.Component {
           "save_goal": 174,
           "amount_saved": 63
         }, {
-          "name": "Vacation to Markova",
-          "goal_date": "2022-07-30",
-          "save_goal": 320,
-          "amount_saved": 62
-        }, {
+          "name": "Space Vacation",
+          "goal_date": "2041-01-01",
+          "save_goal": 1000000,
+          "amount_saved": 5
+        }]
+    }
+    /*
+    , {
           "name": "Vacation to Mondragon",
           "goal_date": "2022-08-27",
           "save_goal": 427,
@@ -256,9 +270,8 @@ export default class Goalsscreen extends React.Component {
           "goal_date": "2022-09-06",
           "save_goal": 330,
           "amount_saved": 13
-        }]
-    }
-
+        }
+    */
   }
   
   PlanScreen(props) {
@@ -270,43 +283,103 @@ export default class Goalsscreen extends React.Component {
   }
 
   // Callback for either the Add Goal button or the gear icon buttons for editing existing goals
-  // This callback is passed from the Goalsscreen class -> GoalScreen function Component -> ListItem function components
   buttonCallback(index = -1) {
     console.log(index)
     
-    // State is immutable, so editing means replacing it with a whole other array
-    var modified = this.state.goals;
+    
     this.setState({modal_visible: true});
+    this.setState({edit_index: index});
 
     if(index == -1) {
 
       this.setState({modal_data: null})
 
+      this.setState({
+        input_name: "",
+        input_save_goal:"",
+        input_amount_saved: "",
+        input_goal_date: new Date(),
+    })
+
       // No index specified, create new goal
     
     } else {
       // Index specified, modify that index's value in goals
-        
+
         this.setState({modal_data: this.state.goals[index]})
-        // Test modification for now
-        /*
-        modified[index] = {
-        "name": "Disney Trip",
-        "goal_date": "2022-08-27",
-        "save_goal": 420,
-        "amount_saved": 69
-      }
-      */
+        this.setState({
+            input_name: this.state.goals[index].name,
+            input_save_goal: this.state.goals[index].save_goal.toString(),
+            input_amount_saved: this.state.goals[index].amount_saved.toString(),
+            input_goal_date: new Date(this.state.goals[index].goal_date),
+        })
     }
+  
+  }
+
+  // Callback for the submit, cancel, and delete buttons for the modal
+  // If there is valid data passed to the function, then the function updates the goals data
+  // Else, it just closes the modal
+  modalCallback(index = -2, remove = false) {
     
+    var modified = this.state.goals;
+    this.setState({modal_visible: false})
+
+    
+    if (index == -2) {
+      // If there is no data, then don't do anything and cancel inputting
+      return
+
+    } else if (index == -1) {
+      // Index -1 means create a new goal
+      modified.push({
+          name: this.state.input_name,
+          goal_date: this.state.input_goal_date,
+          save_goal: this.state.input_save_goal,
+          amount_saved: this.state.input_amount_saved
+      })
+    } else {
+
+      if (!remove ) {
+
+        modified[index] = {
+          name: this.state.input_name,
+          goal_date: this.state.input_goal_date,
+          save_goal: this.state.input_save_goal,
+          amount_saved: this.state.input_amount_saved
+        }
+
+        
+      } else {
+        modified.splice(index, 1)
+      }
+        
+    }
+
+    // State is immutable, so modifying the array means giving it a whole new one
     this.setState({goals: modified})
   }
 
-  // Callback for the submit and cancel buttons in the modal
-  // If there is valid data passed to the function, then the function updates the goals data
-  // Else, it just closes the modal
-  modalCallback(index = -1, newData = {}) {
-    this.setState({modal_visible: false})
+  // Callback for the various input fields on the modal
+  // This is called whenever any of the input fields' values are changed
+  // The identifier determines what value is changed
+  inputCallback(value, identifier) {
+    switch(identifier) {
+      case "name":
+        this.setState({input_name: value});
+        break
+      case "goal":
+        this.setState({input_save_goal: value});
+        break
+      case "saved":
+        this.setState({input_amount_saved: value});
+        break
+      case "date":
+        this.setState({input_goal_date: value});
+        break
+      default:
+        break
+    }
   }
 
   render() {
