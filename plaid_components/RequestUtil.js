@@ -24,9 +24,7 @@ function getFormattedDate(date) {
 // If a valid date range is specified, then it will use it, else it will return the data from the last month of transactions
 export async function getTransactionData(start = null, end = null) {
 
-    console.log(start)
-    console.log(end)
-    if (start == null || end == null) {
+    if (start === null || end === null) {
         var startDate = new Date();
         
         startDate.setMonth(startDate.getMonth() - 1);
@@ -41,7 +39,8 @@ export async function getTransactionData(start = null, end = null) {
 }
 
 
-async function getTransactionDataRange(start, end) {
+ async function getTransactionDataRange(start, end) {
+     //console.log(start, end)
     // Get access_token from local storage
     try {
 
@@ -66,19 +65,17 @@ async function getTransactionDataRange(start, end) {
                 },
             });
 
-
             const data = await response.json();
 
             // Pick only the transaction data that is being used
             var formatted = data.map(
-                transaction => ({acct_id: transaction.account_id, vendor_name: transaction.name, category: transaction.category, amount: transaction.amount, date: transaction.date})
+                transaction => ({ acct_id: transaction.account_id, vendor_name: transaction.name, category: transaction.category, amount: transaction.amount,date: transaction.date})
             );
-
             return formatted;
 
         }
 
     } catch(e) {
-        console.log(e);
+        console.log("error", e);
     }
 }
