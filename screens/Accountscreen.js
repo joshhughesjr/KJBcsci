@@ -9,6 +9,7 @@ import {
 from "react-native";
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import PlaidLinkHandler from "../plaid_components/PlaidLinkHandler";
 const AccountScreen = ({navigation}) => {
   return (
       <View style={styles.container}>
@@ -18,15 +19,8 @@ const AccountScreen = ({navigation}) => {
             <View style={styles.bodyContent}>
               <Text style={styles.name}>Josh Hughes</Text>
             
-
-              <TouchableOpacity style={styles.buttonContainer}
-              onPress={() => navigation.navigate('Add Account')}
-              >
-                <Text>Add Account</Text>
-                
-                
-              </TouchableOpacity>  
-
+              <PlaidLinkHandler></PlaidLinkHandler>
+              
 
               <TouchableOpacity style={styles.buttonContainer}
               onPress={() => navigation.navigate('View Account')}
@@ -45,6 +39,7 @@ const AccountScreen = ({navigation}) => {
               >
                 <Text>Preferences</Text> 
               </TouchableOpacity>
+              
             </View>
         </View>
       </View>
