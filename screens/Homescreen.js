@@ -3,6 +3,9 @@ import { View, StyleSheet, Text, Button } from "react-native";
 import Svg, { G, Circle } from "react-native-svg";
 
 import CategoriesDisplay from "../plaid_components/CategoriesDisplay"
+import BalanceDisplay from '../plaid_components/BalanceDisplay';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+
 
 const App = () => {
   const radius = 70;
@@ -28,80 +31,19 @@ const App = () => {
   const billsAngle = (remaining / total) * 360;
   const regularAngle = spentAngle + billsAngle;
 
+  const Tab = createMaterialTopTabNavigator();
   
   return (
-    <View style={styles.container}>
-      <View style={styles.graphWrapper}>
-        <Svg height="250" width="250" viewBox="0 0 180 180">
-          <G rotation={-90} originX="90" originY="90">
-            { total === 0 ? (
-              <Circle
-                cx="50%"
-                cy="50%"
-                r={radius}
-                stroke="#F1F6F9"
-                fill="transparent"
-                strokeWidth="40"
-              />
-             ) : (
-               <>
-                 <Circle
-                  cx="50%"
-                  cy="50%"
-                  r={radius}
-                  stroke="#7aeb7c"
-                  fill="transparent"
-                  strokeWidth="40"
-                  strokeDasharray={circleCircumference}
-                  strokeDashoffset={spentStrokeDashoffset}
-                  rotation={0}
-                  originX="90"
-                  originY="90"
-                  strokeLinecap="round"
-                 />
-                 <Circle
-                  cx="50%"
-                  cy="50%"
-                  r={radius}
-                  stroke="#4a9c41"
-                  fill="transparent"
-                  strokeWidth="40"
-                  strokeDasharray={circleCircumference}
-                  strokeDashoffset={billsStrokeDashoffset}
-                  rotation={spentAngle}
-                  originX="90"
-                  originY="90"
-                  strokeLinecap="round"
-                 />
-                 <Circle
-                  cx="50%"
-                  cy="50%"
-                  r={radius}
-                  stroke="#1e4d19"
-                  fill="transparent"
-                  strokeWidth="40"
-                  strokeDasharray={circleCircumference}
-                  strokeDashoffset={regularStrokeDashoffset}
-                  rotation={regularAngle}
-                  originX="90"
-                  originY="90"
-                  strokeLinecap="round"
-                />
-               </>
-             )
-            }
-          </G>
-        </Svg>
-        <Text style={styles.label}>${total}</Text>
-      </View>
-    </View>
+      
+      <>
+          <Tab.Navigator>
+            <Tab.Screen name="Balance" component={BalanceDisplay} />
+            <Tab.Screen name="Transactions" component={BalanceDisplay} />
+
+          </Tab.Navigator>
+      </>
   )
 
-  /*
-  return (
-    <CategoriesDisplay></CategoriesDisplay>
-  )
-  */
 };
 
 export default App;
