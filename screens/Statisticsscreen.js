@@ -64,23 +64,21 @@ const styles = StyleSheet.create({
   },
   amount: {
     fontSize: 20,
-    textAlign: 'right',
-    position: 'absolute',
-    paddingRight: 20,
-    paddingTop: 60,
-    right: 0
   },
   item: {
     fontSize: 18,
   }, 
   itemContainer: {
+    flexDirection: 'row',
     backgroundColor: '#DDDDDD',
     paddingLeft: 10,
-    borderRadius: 10,
+    borderRadius: 15,
     paddingRight: 10,
     marginTop: 5,
-    marginBottom: 2,
-    height: 100,
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowRadius: 30,
+    elevation: 2
 },
   
 });
@@ -147,9 +145,17 @@ const data = [{
 const CategoryItem = (props) => {
   return (
           <View style={[styles.itemContainer, {flexDirection: 'column', }]}>
-            <Text style={styles.amount}>{ "$  " + props.amount * -1}</Text>
-            <Text style={styles.item}>{props.vendor_name}</Text>
-            <Text style={styles.item}>{props.category[0]}</Text>
+            <View style={{flexDirection:"row"}}>
+                    <View style={{flex:7}}>
+                        <Text>{props.date}</Text>
+                        <Text style={styles.item}>{props.vendor_name}</Text>
+                        <Text style={styles.item}>{props.category}</Text>
+                    </View>
+
+                    <View style={{flex:3, justifyContent: 'center', alignItems: 'center'}}>
+                    <Text style={styles.amount}>{ "$  " + props.amount * -1}</Text>
+                    </View>
+                </View>
           </View>
   )
 }
@@ -169,7 +175,7 @@ const DetailModal = (props) => {
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
           <Text style={styles.item}>Category Details</Text>
-          <FlatList style={styles.flatList} data={props.modalData} renderItem={({item}) => <CategoryItem vendor_name={item.vendor_name} amount={item.amount} category={item.category}/>} keyExtractor={(item, index) => index.toString()}/>
+          <FlatList style={styles.flatList} data={props.modalData} renderItem={({item}) => <CategoryItem vendor_name={item.vendor_name} amount={item.amount} category={item.category} date={item.date} />} keyExtractor={(item, index) => index.toString()}/>
           <Pressable
             style={[styles.button]}
             onPress={() => props.closeModalCallback(!props.visible)}

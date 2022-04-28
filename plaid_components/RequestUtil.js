@@ -82,3 +82,43 @@ async function getTransactionDataRange(start, end) {
         console.log(e);
     }
 }
+
+async function getBalanceData() {
+
+    // If the access token exists, then process it
+    const token = await AsyncStorage.getItem('@access_token');
+
+    try {
+        if (token != null) {
+            const response = await fetch("https://birdboombox.com/api/getBalance", {
+                    method: "POST",
+                    body: JSON.stringify({ access_token: token }),
+                    headers: {
+                        "Content-Type": "application/json",
+                },
+            });
+    
+            const data = await response.json();
+    
+            return data;
+        }
+
+    } catch (e) {
+        console.log(e);
+    }
+    
+    return null;
+    
+}
+
+export async function getAccountMap() {
+    var balanceData = await getBalanceData()
+
+    var outputMap = {}
+    for (let i = 0; i < balanceData.Balance.accounts.length; i++) {
+        outputMap[balanceData.Balance.accounts[i].account_id] = balanceData.Balance.accounts[i].name
+    }
+
+    return outputMap;
+
+}

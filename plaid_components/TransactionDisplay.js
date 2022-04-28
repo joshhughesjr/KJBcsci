@@ -4,20 +4,64 @@ import {Text, View, StyleSheet, ActivityIndicator, Dimensions} from 'react-nativ
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlatList } from 'react-native-gesture-handler';
+import Constants from 'expo-constants';
 
-import TransactionItem from './TransactionItem';
-import {getTransactionData} from './RequestUtil'
+import {getTransactionData, getAccountMap} from './RequestUtil'
 
 const styles = StyleSheet.create({
+    center: {
+        flex: 1,
+        justifyContent:"center",
+        alignItems:"center"
+    },
     container: {
-        width: Dimensions.get('window').width,
+        flexDirection: 'row',
+        backgroundColor: '#DDDDDD',
+        paddingLeft: 10,
+        borderRadius: 15,
+        paddingRight: 10,
+        marginTop: 5,
+        marginBottom: 10,
+        shadowColor: "#000",
+        shadowRadius: 30,
+        elevation: 2
     },
     item: {
-        padding: 10,
         fontSize: 18,
-        height: 44,
+        
+        
     },
+    date:{
+        fontSize: 15,
+        paddingTop: 2,
+        color: '#666666'
+    },
+    amount: {
+        fontSize: 20,
+    },
+    flatList: {
+        width: "90%",
+        margin: 10
+    }
   });
+
+  function TransactionItem(props) {
+    return (
+            <View style={[styles.container, {flexDirection: 'column', }]}>
+                <View style={{flexDirection:"row"}}>
+                    <View style={{flex:7}}>
+                        <Text>{props.date}</Text>
+                        <Text style={styles.item}>{props.vendor_name}</Text>
+                        <Text style={styles.item}>{props.category}</Text>
+                    </View>
+
+                    <View style={{flex:3, justifyContent: 'center', alignItems: 'center'}}>
+                    <Text style={styles.amount}>{ "$  " + props.amount * -1}</Text>
+                    </View>
+                </View>
+            </View>
+    )
+  }
 
 export default class TransactionDisplay extends React.Component {
 
@@ -37,6 +81,8 @@ export default class TransactionDisplay extends React.Component {
             return null;
         }
     }
+
+    
     
     async componentDidMount() {
 
@@ -49,43 +95,31 @@ export default class TransactionDisplay extends React.Component {
 
                 this.setState({accessToken: token});
                 
-                var testStart = new Date()
-                testStart.setDate(1)
+                var startDate = new Date()
+                startDate.setDate(1)
 
-                var testEnd = new Date();
+                var endDate = new Date();
 
-                var data = await getTransactionData(testStart, testEnd);
-                console.log(data)
+                var data = await getTransactionData(startDate, endDate);
+                
                 this.setState({transactionData: JSON.stringify(data)})
             
             }
             
-            /*
-            // If the access token exists, then process it
-            const token = await AsyncStorage.getItem('@access_token')
 
-            if(token !== null) {
 
-                this.setState({accessToken: token});
-
-                var data = await this.getTransactions(token);
-                var formatted = this.formatData(data);
-                this.setState({transactionData: JSON.stringify(formatted)})
-
-            }
-            */
 
         } catch(e) {
             console.log(e);
         }
 
-        // Get accounts from local storage
+        
         try {
-            const accounts = await AsyncStorage.getItem('@accounts')
+            // Get account data
+            const accounts = await getAccountMap();
 
-            if(accounts != null) {
-                this.setState({account_map: accounts});
-            }
+            this.setState({account_map: accounts});
+            
         } catch(e) {
             console.log(e);
         }
@@ -142,9 +176,8 @@ export default class TransactionDisplay extends React.Component {
 
         } else if (this.state.transactionData != "" && this.state.account_map != null) {
             var data = JSON.parse(this.state.transactionData)
-            console.log(data)
 
-            var account_map = JSON.parse(this.state.account_map);
+            var account_map = this.state.account_map;
 
             if (data.length == 0) {
                 return <Text>No Data Found</Text>
@@ -152,7 +185,9 @@ export default class TransactionDisplay extends React.Component {
 
             // Displaying Data State
             return (
-                <FlatList style={styles.container} data={data} renderItem={({item}) => <TransactionItem account_id={account_map[item.acct_id]} date={item.date} vendor_name={item.vendor_name} category={item.category[0]} amount={item.amount}/>} keyExtractor={(item, index) => index.toString()}/>
+                <View style={styles.center}>
+                <FlatList style={styles.flatList} data={data} renderItem={({item}) => <TransactionItem account_id={account_map[item.acct_id]} date={item.date} vendor_name={item.vendor_name} category={item.category[0]} amount={item.amount}/>} keyExtractor={(item, index) => index.toString()}/>
+                </View>
             )
                 // <Text style={styles.item}>{account_map[item.acct_id] + " - " + item.vendor_name + " " + item.category[0] + ": " + item.amount}</Text>
         } else {

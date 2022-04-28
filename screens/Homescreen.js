@@ -4,6 +4,7 @@ import Svg, { G, Circle } from "react-native-svg";
 
 import CategoriesDisplay from "../plaid_components/CategoriesDisplay"
 import BalanceDisplay from '../plaid_components/BalanceDisplay';
+import TransactionDisplay from '../plaid_components/TransactionDisplay'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 
@@ -38,7 +39,7 @@ const App = () => {
       <>
           <Tab.Navigator>
             <Tab.Screen name="Balance" component={BalanceDisplay} />
-            <Tab.Screen name="Transactions" component={BalanceDisplay} />
+            <Tab.Screen name="Transactions" component={TransactionDisplay} />
 
           </Tab.Navigator>
       </>

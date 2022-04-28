@@ -45,7 +45,6 @@ export default class BalanceDisplay extends React.Component {
             if(token !== null) {
 
                 this.setState({accessToken: token});
-                console.log(token);
 
                 var data = await this.getBalance(token);
                 var formatted = this.formatData(data);
@@ -69,7 +68,7 @@ export default class BalanceDisplay extends React.Component {
         });
 
         const data = await response.json();
-        console.log(data)
+
         return data;
     }
 
