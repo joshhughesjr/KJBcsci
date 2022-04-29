@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     paddingRight: 10,
     marginTop: 5,
-    marginBottom: 10,
+    marginBottom: 5,
     shadowColor: "#000",
     shadowRadius: 30,
     elevation: 2
@@ -374,7 +374,7 @@ export default class Statisticsscreen extends React.Component {
                     width:"100%",
                     margin:2,
                     paddingHorizontal:20,
-                    marginVertical: 15,
+                    marginVertical: 4,
                   }} key={i} onPress={() => this.showCategoryDetails(p.name) }>
 
                       <View style={{
