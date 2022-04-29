@@ -55,12 +55,16 @@ export default class CalendarScreen extends React.Component {
    async loadItems() {
     
       const trans = await getTransactionData();
-      this.setState({transactionData: trans});
+
+      // Right now, trans has incorrectly formatted transaction data for the agenda
+      // If we were to set the state to it, the Agenda would recieve the incorrect data
+      // Even though the state is later set to the correctly formatted data, this initial set state still throws an error
+      //this.setState({transactionData: trans});
     
     // Process Transaction Data
     const newItems = {};
-    Object.keys(this.state.transactionData).forEach(key => {
-      const t = this.state.transactionData[key]
+    Object.keys(trans).forEach(key => {
+      const t = trans[key]
       newItems[t.date] = [{
         'name': t.vendor_name + " $" + t.amount
       }]});

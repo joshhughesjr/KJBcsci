@@ -52,7 +52,7 @@ const StatisticsStackNavigator = () => {
 const CalendarStackNavigator = () => {
   return (
     <Stack.Navigator screenOptions={screenOptionStyle}>
-      <Stack.Screen name="Calendar" component={CalendarScreen} options={{headerShown:false}} />
+      <Stack.Screen name="Calendar " component={CalendarScreen} options={{headerShown:false}} />
     </Stack.Navigator>
   );
 }
