@@ -35,7 +35,12 @@ const App = () => {
   const Tab = createMaterialTopTabNavigator();
   
   return (
-      
+    
+    <View style={{display:"flex", flexDirection:"column", flex:1, justifyContent:"center", alignItems:"center" }}>
+      <BalanceDisplay style={{flex: 1, marginTop: 10}}></BalanceDisplay>
+      <TransactionDisplay style={{flex: 4}}></TransactionDisplay>
+    </View>
+    /*
       <>
           <Tab.Navigator>
             <Tab.Screen name="Balance" component={BalanceDisplay} />
@@ -43,6 +48,7 @@ const App = () => {
 
           </Tab.Navigator>
       </>
+    */
   )
 
 };

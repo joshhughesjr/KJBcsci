@@ -12,7 +12,8 @@ const styles = StyleSheet.create({
     center: {
         flex: 1,
         justifyContent:"center",
-        alignItems:"center"
+        alignItems:"center",
+        width: "90%"
     },
     container: {
         flexDirection: 'row',
@@ -193,7 +194,8 @@ export default class TransactionDisplay extends React.Component {
         } else {
             
             // Loading State
-            return (<ActivityIndicator size="large" color="#6ebf4a"/>)
+            //return (<ActivityIndicator size="large" color="#6ebf4a"/>)
+            return <Text>Loading Transactions...</Text>
 
         }
     }

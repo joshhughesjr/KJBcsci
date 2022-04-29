@@ -17,6 +17,12 @@ const styles = StyleSheet.create({
     },
   });
 
+function formatCurrency(amount) {
+
+return new Intl.NumberFormat('en-US', {style: 'currency',currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 2}).format(amount)
+
+}
+
 export default class BalanceDisplay extends React.Component {
 
     constructor(props) {
@@ -28,7 +34,8 @@ export default class BalanceDisplay extends React.Component {
     // Formats the data to only relevant data
     formatData(balance) {
         if(balance) {
-            return balance.Balance.accounts.map(acct => ({name: acct.name, type: acct.type, balance: acct.balances.current}));
+            console.log(balance)
+            return balance.Balance.accounts.map(acct => ({name: acct.name, type: acct.type, available: acct.balances.available}));
         } else {
             return null;
         }
@@ -82,20 +89,28 @@ export default class BalanceDisplay extends React.Component {
 
         } else if (this.state.balanceData != "") {
             var data = JSON.parse(this.state.balanceData)
+
             if (data.length == 0) {
                 return <Text>No Data Found</Text>
             }
 
+
             // Displaying Data State
             return (
-                <FlatList data={data} renderItem={({item}) => <Text style={styles.item}>{item.name + ": " + item.balance}</Text>} keyExtractor={(item, index) => index.toString()}/>
+                
+                <View style={{display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center" }}>
+                    <Text style={{textAlign:"center", fontSize:30}}>Available Balance:</Text>
+                    <Text style={{textAlign:"center", fontSize:30}}>{formatCurrency(data[0].available)}</Text>
+                </View>
+                
+                //<FlatList data={data} renderItem={({item}) => <Text style={styles.item}>{item.name + ": " + item.available}</Text>} keyExtractor={(item, index) => index.toString()}/>
             )
 
         } else {
             
             // Loading State
-            return (<ActivityIndicator size="large" color="#6ebf4a"/>)
-
+            //return (<ActivityIndicator size="large" color="#6ebf4a"/>)
+            return <Text>Loading Balance...</Text>
         }
     }
 }
