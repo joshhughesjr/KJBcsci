@@ -176,7 +176,14 @@ export default class TransactionDisplay extends React.Component {
             return <Text>No Bank Login Found</Text>;
 
         } else if (this.state.transactionData != "" && this.state.account_map != null) {
+
+            if (typeof this.state.transactionData == "undefined") {
+                return <Text>No Transaction Data Processed Yet</Text>
+            }
+            
             var data = JSON.parse(this.state.transactionData)
+
+            
 
             var account_map = this.state.account_map;
 

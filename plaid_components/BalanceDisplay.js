@@ -34,7 +34,6 @@ export default class BalanceDisplay extends React.Component {
     // Formats the data to only relevant data
     formatData(balance) {
         if(balance) {
-            console.log(balance)
             return balance.Balance.accounts.map(acct => ({name: acct.name, type: acct.type, available: acct.balances.available}));
         } else {
             return null;

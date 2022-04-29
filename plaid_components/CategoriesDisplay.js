@@ -51,7 +51,7 @@ export default class CategoriesDisplay extends React.Component {
                 var transaction_data = await this.getCategoryData(token);
                 var formatted_transaction_data = this.formatData(transaction_data);
                 //this.setState({transaction_data: JSON.stringify(formatted_transaction_data)});
-                console.log(formatted_transaction_data)
+
                 var category_data = {};
 
                 // Sum up the total costs for each category

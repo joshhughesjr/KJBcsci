@@ -284,7 +284,6 @@ export default class Goalsscreen extends React.Component {
 
   // Callback for either the Add Goal button or the gear icon buttons for editing existing goals
   buttonCallback(index = -1) {
-    console.log(index)
     
     
     this.setState({modal_visible: true});

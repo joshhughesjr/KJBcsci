@@ -234,21 +234,33 @@ export default class Statisticsscreen extends React.Component {
 
         // Ignore transactions that don't have a category
         if(transaction_data.category != "") {
+            var amount = Number(transaction_data[i].amount)
+
+            // Ignore amounts that are negative because those are not expenses
+            if (amount < 0) {
+              continue
+            }
 
             // If the category exists, add the amount to the total
             if (transaction_data[i].category[0] in category_totals) {
-                category_totals[transaction_data[i].category[0]] += Number(transaction_data[i].amount);
+                category_totals[transaction_data[i].category[0]] += amount;
             } else {
                 // Else, add the category to the category data
-                category_totals[transaction_data[i].category[0]] = Number(transaction_data[i].amount);
+                category_totals[transaction_data[i].category[0]] = amount;
             }
             
-            // Also add this expense to the expense total
-            expense_total += Number(transaction_data[i].amount);
+            // Also add this expense to the expense total only if the number is positive
+            if (Number(transaction_data[i].amount > 0)) {
+              expense_total += amount;
+            }
+            
 
         }
         
     }
+
+    //console.log(expense_total)
+    //console.log(category_totals);
 
     
     
@@ -330,13 +342,14 @@ export default class Statisticsscreen extends React.Component {
     // Go through all of the transactions
     for(var i = 0; i < this.state.transactionData.length; i++) {
 
-      // If the transaction's category matches, add it to the list of transactions
-      if(this.state.transactionData[i].category[0] == category_name) {
+      // If the transaction's category matches and it is an expense (non negative amount), add it to the list of transactions
+      if(this.state.transactionData[i].category[0] == category_name && this.state.transactionData[i].amount > 0) {
         transactions.push(this.state.transactionData[i]);
       } else if (category_name == "Other") {
         // Other is a special case because that isn't in the transaction data.
         // Instead, look at otherCategories to see what categories are considered "Other" and add those to the list of transactions
-        if (this.state.otherCategories.has(this.state.transactionData[i].category[0])) {
+        // Only add expenses (non negative amount)
+        if (this.state.otherCategories.has(this.state.transactionData[i].category[0] && this.state.transactionData[i].amount > 0)) {
           transactions.push(this.state.transactionData[i]);
         }
       }
@@ -352,6 +365,9 @@ export default class Statisticsscreen extends React.Component {
 
     if (this.state.transactionStats != null) {
       
+      if(typeof this.state.transactionStats == "undefined") {
+        return <Text>No Transaction Data Yet</Text>
+      }
       return (
 
         <View style={{flex:1}}>

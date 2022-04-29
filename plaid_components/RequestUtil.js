@@ -24,8 +24,9 @@ function getFormattedDate(date) {
 // If a valid date range is specified, then it will use it, else it will return the data from the last month of transactions
 export async function getTransactionData(start = null, end = null) {
 
-    console.log(start)
-    console.log(end)
+    //console.log(start)
+    //console.log(end)
+    
     if (start == null || end == null) {
         var startDate = new Date();
         
