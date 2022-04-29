@@ -2,7 +2,7 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import { HomeStackNavigator, GoalsStackNavigator, StatisticsStackNavigator, CalenderStackNavigator, AccountStackNavigator } from "./StackNavigator";
+import { HomeStackNavigator, GoalsStackNavigator, StatisticsStackNavigator, CalendarStackNavigator, AccountStackNavigator } from "./StackNavigator";
 
 const Tab = createBottomTabNavigator();
 
@@ -40,7 +40,7 @@ export default class BottomTabNavigator extends React.Component {
       />
       <Tab.Screen 
       name="Calendar" 
-      component={CalenderStackNavigator}
+      component={CalendarStackNavigator}
       options={{ tabBarIcon: ({size, color}) => (<Icon name={"calendar"} color={'#6ebf4a'} size={size} />)
       }}
       
