@@ -1,10 +1,11 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
+import { View, Image, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 import Home from "../screens/Homescreen";
-import Goalsscreen from "../screens/Goalsscreen";
+import GoalsScreen from "../screens/Goalsscreen";
 import StatisticsScreen from "../screens/Statisticsscreen";
-import CalendarScreen from "../screens/Calendarscreen";
+import CalenderScreen from "../screens/Calenderscreen";
 import AccountScreen from "../screens/Accountscreen";
 import DetailsScreen from "../screens/Detailsscreen";
 import AddAccountScreen from "../screens/AddAccountscreen";
@@ -15,27 +16,79 @@ import PreferencesScreen from "../screens/Preferencesscreen";
 const Stack = createStackNavigator();
 
 const screenOptionStyle = {
-  headerStyle: {
+    headerStyle: {
     backgroundColor: "#6ebf4a",
   },
   headerTintColor: "white",
   headerBackTitle: "Back",
+  
+     
 };
+
 
 const HomeStackNavigator = () => {
   return (
-    <Stack.Navigator screenOptions={screenOptionStyle}>
-      <Stack.Screen name="Welcome!" component={Home} />
-      <Stack.Screen name="Details" component={DetailsScreen} />
-    </Stack.Navigator>
+
+      <Stack.Navigator screenOptions={screenOptionStyle}>
+        <Stack.Screen 
+        name="Welcome!" 
+        component={Home} 
+        options={{
+        headerRight: () => (
+          <TouchableOpacity onPress={() => Alert.alert('image clicked')}>
+            <Image
+              source={require("../assets/visions.png")}
+              style={{ 
+              width: 40, 
+              height: 50, 
+              marginRight: 10,
+              alignItems: "center",
+              justifyContent: "center",
+              }}
+              />
+          </TouchableOpacity>         
+        ),
+       
+      }}
+        />
+
+        <Stack.Screen name="Details" component={DetailsScreen} />
+        
+        
+      </Stack.Navigator>
+
+      
   );
 }
 
 const GoalsStackNavigator = () => {
   return (
     <Stack.Navigator screenOptions={screenOptionStyle}>
-      <Stack.Screen name="Daily Spending" component={Goalsscreen} />
+      
+      <Stack.Screen 
+      name="Daily Spending" 
+      component={GoalsScreen} 
+       options={{
+        headerRight: () => (
+          <TouchableOpacity onPress={() => Alert.alert('image clicked')}>
+            <Image
+              source={require("../assets/visions.png")}
+              style={{ 
+              width: 40, 
+              height: 50, 
+              marginRight: 10,
+              alignItems: "center",
+              justifyContent: "center",
+              }}
+              />
+          </TouchableOpacity>         
+        ),
+       
+        }}
+      />
+
       <Stack.Screen name="Details" component={DetailsScreen} />
+      
     </Stack.Navigator>
   );
 }
@@ -43,16 +96,38 @@ const GoalsStackNavigator = () => {
 const StatisticsStackNavigator = () => {
   return (
     <Stack.Navigator screenOptions={screenOptionStyle}>
-      <Stack.Screen name="This Month's Statistics" component={StatisticsScreen} />
+      <Stack.Screen 
+      name="This Months Statistics" 
+      component={StatisticsScreen} 
+       options={{
+        headerRight: () => (
+          <TouchableOpacity onPress={() => Alert.alert('image clicked')}>
+            <Image
+              source={require("../assets/visions.png")}
+              style={{ 
+              width: 40, 
+              height: 50, 
+              marginRight: 10,
+              alignItems: "center",
+              justifyContent: "center",
+              }}
+              />
+          </TouchableOpacity>         
+        ),
+       
+        }}
+    />
+
+      
       <Stack.Screen name="Details" component={DetailsScreen} />
     </Stack.Navigator>
   );
 }
 
-const CalendarStackNavigator = () => {
+const CalenderStackNavigator = () => {
   return (
     <Stack.Navigator screenOptions={screenOptionStyle}>
-      <Stack.Screen name="Calendar " component={CalendarScreen} options={{headerShown:false}} />
+      <Stack.Screen name="Calendar" component={CalenderScreen} options={{headerShown:false}} />
     </Stack.Navigator>
   );
 }
@@ -69,4 +144,4 @@ const AccountStackNavigator = () => {
   );
 }
 
-export { HomeStackNavigator, GoalsStackNavigator, StatisticsStackNavigator, CalendarStackNavigator, AccountStackNavigator};
+export { HomeStackNavigator, GoalsStackNavigator, StatisticsStackNavigator, CalenderStackNavigator, AccountStackNavigator};
