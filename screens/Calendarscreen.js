@@ -17,12 +17,13 @@ export default class CalendarScreen extends React.Component {
     return (
       <Agenda
         //renderEmptyData={() => null}
-        items={this.state.transactionData}
+        //items={this.state.items}
+        items={this.state.items}
         loadItemsForMonth={this.loadItems.bind(this)}
-        selected={moment().subtract(1,'month').format('YYYY-MM-DD')}
+        selected={moment().format('YYYY-MM-DD')}
         renderItem={this.renderItem.bind(this)}
         rowHasChanged={this.rowHasChanged.bind(this)}
-        renderEmptyDateS={(this.renderItem.bind(this))}
+        renderEmptyDate={(this.renderEmptyDate.bind(this))}
         showClosingKnob={true}
         pastScrollRange={50}
         futureScrollRange={50}
@@ -52,19 +53,15 @@ export default class CalendarScreen extends React.Component {
     );
   }
   
-   async loadItems() {
+   /*async loadItems() {
     
       const trans = await getTransactionData();
-
-      // Right now, trans has incorrectly formatted transaction data for the agenda
-      // If we were to set the state to it, the Agenda would recieve the incorrect data
-      // Even though the state is later set to the correctly formatted data, this initial set state still throws an error
-      //this.setState({transactionData: trans});
+      this.setState({transactionData: trans});
     
     // Process Transaction Data
     const newItems = {};
-    Object.keys(trans).forEach(key => {
-      const t = trans[key]
+    Object.keys(this.state.transactionData).forEach(key => {
+      const t = this.state.transactionData[key]
       newItems[t.date] = [{
         'name': t.vendor_name + " $" + t.amount
       }]});
@@ -73,7 +70,41 @@ export default class CalendarScreen extends React.Component {
     });
   }
 
-
+*/
+async loadItems(day) {
+  const items = this.state.items || {};
+  if(this.state.items == null){
+  const trans =  await getTransactionData();
+    this.setState({transactionData: trans});
+  
+  
+    for (let i = -15; i < 20; i++) {
+      const time = day.timestamp + i * 24 * 60 * 60 * 1000;
+      const strTime = this.timeToString(time);
+      items[strTime] = [];
+    
+   }
+    
+    // const newItems = {};
+    // Object.keys(items).forEach(key => {
+    //   newItems[key] = items[key];
+    // });
+    Object.keys(this.state.transactionData).forEach(key => {
+      const t = this.state.transactionData[key];
+      const tname = t.vendor_name + " $" + t.amount;
+      const tstrTime = this.timeToString(t.date);
+      if(items[tstrTime]) {
+        items[tstrTime].push({'name': tname});
+      }
+    });
+    // this.setState({
+    //     transactionData: newItems
+    // });
+    this.setState({
+      items: items
+    });
+  }
+}
   renderItem(item) {
     return (
       <View style={[styles.item, {height: item.height}]}><Text>{item.name}</Text></View>
@@ -90,7 +121,7 @@ export default class CalendarScreen extends React.Component {
   }
   renderEmptyDate() {
     return (
-      <View style={styles.item}><Text>This is empty date!</Text></View>
+      <View style={styles.emptyDate}><Text>No Purchases on this date</Text></View>
     );
   }
 }
@@ -110,19 +141,3 @@ const styles = StyleSheet.create({
     paddingTop: 30
   }
 });
-/*if (this.state.transactionData == null) {
-  const trans = await getTransactionData();
-  this.setState({transactionData: trans});
-  
-}
-
-// Process Transaction Data
-const newItems = {};
-Object.keys(this.state.transactionData).forEach(key => {
-  const t = this.state.transactionData[key]
-  newItems[t.date] = [{
-    'name': t.vendor_name + " $" + t.amount
-  }]});
-this.setState({
-    transactionData: newItems
-});*/
