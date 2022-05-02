@@ -97,7 +97,7 @@ export default class TransactionDisplay extends React.Component {
                 this.setState({accessToken: token});
                 
                 var startDate = new Date()
-                startDate.setDate(1)
+                startDate.setMonth(startDate.getMonth() - 1)
 
                 var endDate = new Date();
 
